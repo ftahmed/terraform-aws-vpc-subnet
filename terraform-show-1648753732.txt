@@ -1,0 +1,501 @@
+[0m
+# module.networking.aws_eip.bastion:
+resource "aws_eip" "bastion" {
+    [1m[0massociation_id[0m[0m       = "eipassoc-00cb09d3f5116c7b5"
+    [1m[0mdomain[0m[0m               = "vpc"
+    [1m[0mid[0m[0m                   = "eipalloc-050dd88d085f9d8ce"
+    [1m[0minstance[0m[0m             = "i-093d23cf1641418ae"
+    [1m[0mnetwork_border_group[0m[0m = "eu-west-2"
+    [1m[0mnetwork_interface[0m[0m    = "eni-06d3846e16df1655a"
+    [1m[0mprivate_dns[0m[0m          = "ip-10-0-47-253.eu-west-2.compute.internal"
+    [1m[0mprivate_ip[0m[0m           = "10.0.47.253"
+    [1m[0mpublic_dns[0m[0m           = "ec2-18-135-73-18.eu-west-2.compute.amazonaws.com"
+    [1m[0mpublic_ip[0m[0m            = "18.135.73.18"
+    [1m[0mpublic_ipv4_pool[0m[0m     = "amazon"
+    [1m[0mtags_all[0m[0m             = {}
+    [1m[0mvpc[0m[0m                  = true
+}
+
+# module.networking.aws_eip.nat_eip:
+resource "aws_eip" "nat_eip" {
+    [1m[0massociation_id[0m[0m       = "eipassoc-08e4b06ea325b6584"
+    [1m[0mdomain[0m[0m               = "vpc"
+    [1m[0mid[0m[0m                   = "eipalloc-046aebdc1c5f8cfa9"
+    [1m[0mnetwork_border_group[0m[0m = "eu-west-2"
+    [1m[0mnetwork_interface[0m[0m    = "eni-0e09ed0ce1fe488cc"
+    [1m[0mprivate_dns[0m[0m          = "ip-10-0-38-34.eu-west-2.compute.internal"
+    [1m[0mprivate_ip[0m[0m           = "10.0.38.34"
+    [1m[0mpublic_dns[0m[0m           = "ec2-35-178-128-90.eu-west-2.compute.amazonaws.com"
+    [1m[0mpublic_ip[0m[0m            = "35.178.128.90"
+    [1m[0mpublic_ipv4_pool[0m[0m     = "amazon"
+    [1m[0mtags[0m[0m                 = {}
+    [1m[0mtags_all[0m[0m             = {}
+    [1m[0mvpc[0m[0m                  = true
+}
+
+# module.networking.aws_instance.bastion:
+resource "aws_instance" "bastion" {
+    [1m[0mami[0m[0m                                  = "ami-0bab5c8be0975423b"
+    [1m[0marn[0m[0m                                  = "arn:aws:ec2:eu-west-2:467952971505:instance/i-093d23cf1641418ae"
+    [1m[0massociate_public_ip_address[0m[0m          = true
+    [1m[0mavailability_zone[0m[0m                    = "eu-west-2a"
+    [1m[0mcpu_core_count[0m[0m                       = 1
+    [1m[0mcpu_threads_per_core[0m[0m                 = 2
+    [1m[0mdisable_api_termination[0m[0m              = false
+    [1m[0mebs_optimized[0m[0m                        = false
+    [1m[0mget_password_data[0m[0m                    = false
+    [1m[0mhibernation[0m[0m                          = false
+    [1m[0mid[0m[0m                                   = "i-093d23cf1641418ae"
+    [1m[0minstance_initiated_shutdown_behavior[0m[0m = "stop"
+    [1m[0minstance_state[0m[0m                       = "running"
+    [1m[0minstance_type[0m[0m                        = "t3a.nano"
+    [1m[0mipv6_address_count[0m[0m                   = 0
+    [1m[0mipv6_addresses[0m[0m                       = []
+    [1m[0mkey_name[0m[0m                             = "eo-tanvir-key"
+    [1m[0mmonitoring[0m[0m                           = false
+    [1m[0mprimary_network_interface_id[0m[0m         = "eni-06d3846e16df1655a"
+    [1m[0mprivate_dns[0m[0m                          = "ip-10-0-47-253.eu-west-2.compute.internal"
+    [1m[0mprivate_ip[0m[0m                           = "10.0.47.253"
+    [1m[0mpublic_dns[0m[0m                           = "ec2-3-10-234-233.eu-west-2.compute.amazonaws.com"
+    [1m[0mpublic_ip[0m[0m                            = "3.10.234.233"
+    [1m[0msecondary_private_ips[0m[0m                = []
+    [1m[0msecurity_groups[0m[0m                      = []
+    [1m[0msource_dest_check[0m[0m                    = true
+    [1m[0msubnet_id[0m[0m                            = "subnet-08eeae25ac65452e5"
+    [1m[0mtags[0m[0m                                 = {
+        "Name" = "eo-bastion"
+    }
+    [1m[0mtags_all[0m[0m                             = {
+        "Name" = "eo-bastion"
+    }
+    [1m[0mtenancy[0m[0m                              = "default"
+    [1m[0mvpc_security_group_ids[0m[0m               = [
+        "sg-081e5098365d6cdaf",
+    ]
+
+    credit_specification {
+        [1m[0mcpu_credits[0m[0m = "unlimited"
+    }
+
+    enclave_options {
+        [1m[0menabled[0m[0m = false
+    }
+
+    metadata_options {
+        [1m[0mhttp_endpoint[0m[0m               = "enabled"
+        [1m[0mhttp_put_response_hop_limit[0m[0m = 1
+        [1m[0mhttp_tokens[0m[0m                 = "optional"
+    }
+
+    root_block_device {
+        [1m[0mdelete_on_termination[0m[0m = true
+        [1m[0mdevice_name[0m[0m           = "/dev/sda1"
+        [1m[0mencrypted[0m[0m             = false
+        [1m[0miops[0m[0m                  = 100
+        [1m[0mtags[0m[0m                  = {}
+        [1m[0mthroughput[0m[0m            = 0
+        [1m[0mvolume_id[0m[0m             = "vol-01b1f57d8322505fd"
+        [1m[0mvolume_size[0m[0m           = 10
+        [1m[0mvolume_type[0m[0m           = "gp2"
+    }
+}
+
+# module.networking.aws_internet_gateway.ig:
+resource "aws_internet_gateway" "ig" {
+    [1m[0marn[0m[0m      = "arn:aws:ec2:eu-west-2:467952971505:internet-gateway/igw-08074d278b654b9e6"
+    [1m[0mid[0m[0m       = "igw-08074d278b654b9e6"
+    [1m[0mowner_id[0m[0m = "467952971505"
+    [1m[0mtags[0m[0m     = {
+        "Environment" = "production"
+        "Name"        = "eo-igw"
+    }
+    [1m[0mtags_all[0m[0m = {
+        "Environment" = "production"
+        "Name"        = "eo-igw"
+    }
+    [1m[0mvpc_id[0m[0m   = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_key_pair.main:
+resource "aws_key_pair" "main" {
+    [1m[0marn[0m[0m         = "arn:aws:ec2:eu-west-2:467952971505:key-pair/eo-tanvir-key"
+    [1m[0mfingerprint[0m[0m = "31:7c:86:e9:7b:63:71:a5:8b:81:66:85:07:79:14:e2"
+    [1m[0mid[0m[0m          = "eo-tanvir-key"
+    [1m[0mkey_name[0m[0m    = "eo-tanvir-key"
+    [1m[0mkey_pair_id[0m[0m = "key-0a7661501fdf23d19"
+    [1m[0mpublic_key[0m[0m  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgoYgZrq/LuyTD/NTq1tVorS90Gy+k4dTyczj8d422nAGoeAOUVyUEfxnyX061sgqCIPJaX0rWd85ukLUKWW8qN84rpyD9Lb/JUmlwDPlMFS5zBNXwIzyHZuvMxP1Xq2yhXTWHKJk03dqDyNAPBvYGxrvxbfQhE8zc1VQKnascuYJcZIdTXBn4jRqtjF0lc5hg7qFx1EQv5bLNXmCiGkgHurj3imTa6Qb2mbOrYviWy75pBllWFgNNuh3z2/VttDnTHqAW3bfsH5wm6gIWWqP7va+7RBA1B+hotI3/nmHR5rqXhTVmn1ecfQ0jYaN53X9RAz/naIeqEp/8bNZuQPQd"
+    [1m[0mtags[0m[0m        = {}
+    [1m[0mtags_all[0m[0m    = {}
+}
+
+# module.networking.aws_nat_gateway.nat:
+resource "aws_nat_gateway" "nat" {
+    [1m[0mallocation_id[0m[0m        = "eipalloc-046aebdc1c5f8cfa9"
+    [1m[0mid[0m[0m                   = "nat-0413c961222e9fae6"
+    [1m[0mnetwork_interface_id[0m[0m = "eni-0e09ed0ce1fe488cc"
+    [1m[0mprivate_ip[0m[0m           = "10.0.38.34"
+    [1m[0mpublic_ip[0m[0m            = "35.178.128.90"
+    [1m[0msubnet_id[0m[0m            = "subnet-08eeae25ac65452e5"
+    [1m[0mtags[0m[0m                 = {
+        "Environment" = "production"
+        "Name"        = "eo-nat"
+    }
+    [1m[0mtags_all[0m[0m             = {
+        "Environment" = "production"
+        "Name"        = "eo-nat"
+    }
+}
+
+# module.networking.aws_route.private_nat_gateway:
+resource "aws_route" "private_nat_gateway" {
+    [1m[0mdestination_cidr_block[0m[0m = "0.0.0.0/0"
+    [1m[0mid[0m[0m                     = "r-rtb-041f54bded551331a1080289494"
+    [1m[0mnat_gateway_id[0m[0m         = "nat-0413c961222e9fae6"
+    [1m[0morigin[0m[0m                 = "CreateRoute"
+    [1m[0mroute_table_id[0m[0m         = "rtb-041f54bded551331a"
+    [1m[0mstate[0m[0m                  = "active"
+}
+
+# module.networking.aws_route.public_internet_gateway:
+resource "aws_route" "public_internet_gateway" {
+    [1m[0mdestination_cidr_block[0m[0m = "0.0.0.0/0"
+    [1m[0mgateway_id[0m[0m             = "igw-08074d278b654b9e6"
+    [1m[0mid[0m[0m                     = "r-rtb-0b360ecd4f8e7ccb11080289494"
+    [1m[0morigin[0m[0m                 = "CreateRoute"
+    [1m[0mroute_table_id[0m[0m         = "rtb-0b360ecd4f8e7ccb1"
+    [1m[0mstate[0m[0m                  = "active"
+}
+
+# module.networking.aws_route_table.private:
+resource "aws_route_table" "private" {
+    [1m[0marn[0m[0m              = "arn:aws:ec2:eu-west-2:467952971505:route-table/rtb-041f54bded551331a"
+    [1m[0mid[0m[0m               = "rtb-041f54bded551331a"
+    [1m[0mowner_id[0m[0m         = "467952971505"
+    [1m[0mpropagating_vgws[0m[0m = []
+    [1m[0mroute[0m[0m            = [
+        {
+            carrier_gateway_id         = ""
+            cidr_block                 = "0.0.0.0/0"
+            destination_prefix_list_id = ""
+            egress_only_gateway_id     = ""
+            gateway_id                 = ""
+            instance_id                = ""
+            ipv6_cidr_block            = ""
+            local_gateway_id           = ""
+            nat_gateway_id             = "nat-0413c961222e9fae6"
+            network_interface_id       = ""
+            transit_gateway_id         = ""
+            vpc_endpoint_id            = ""
+            vpc_peering_connection_id  = ""
+        },
+    ]
+    [1m[0mtags[0m[0m             = {
+        "Environment" = "production"
+        "Name"        = "eo-private-route-table"
+    }
+    [1m[0mtags_all[0m[0m         = {
+        "Environment" = "production"
+        "Name"        = "eo-private-route-table"
+    }
+    [1m[0mvpc_id[0m[0m           = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_route_table.public:
+resource "aws_route_table" "public" {
+    [1m[0marn[0m[0m              = "arn:aws:ec2:eu-west-2:467952971505:route-table/rtb-0b360ecd4f8e7ccb1"
+    [1m[0mid[0m[0m               = "rtb-0b360ecd4f8e7ccb1"
+    [1m[0mowner_id[0m[0m         = "467952971505"
+    [1m[0mpropagating_vgws[0m[0m = []
+    [1m[0mroute[0m[0m            = [
+        {
+            carrier_gateway_id         = ""
+            cidr_block                 = "0.0.0.0/0"
+            destination_prefix_list_id = ""
+            egress_only_gateway_id     = ""
+            gateway_id                 = "igw-08074d278b654b9e6"
+            instance_id                = ""
+            ipv6_cidr_block            = ""
+            local_gateway_id           = ""
+            nat_gateway_id             = ""
+            network_interface_id       = ""
+            transit_gateway_id         = ""
+            vpc_endpoint_id            = ""
+            vpc_peering_connection_id  = ""
+        },
+    ]
+    [1m[0mtags[0m[0m             = {
+        "Environment" = "production"
+        "Name"        = "eo-public-route-table"
+    }
+    [1m[0mtags_all[0m[0m         = {
+        "Environment" = "production"
+        "Name"        = "eo-public-route-table"
+    }
+    [1m[0mvpc_id[0m[0m           = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_route_table_association.private[0]:
+resource "aws_route_table_association" "private" {
+    [1m[0mid[0m[0m             = "rtbassoc-0ab20c3bd5268277f"
+    [1m[0mroute_table_id[0m[0m = "rtb-041f54bded551331a"
+    [1m[0msubnet_id[0m[0m      = "subnet-0f138ca4274483112"
+}
+
+# module.networking.aws_route_table_association.private[1]:
+resource "aws_route_table_association" "private" {
+    [1m[0mid[0m[0m             = "rtbassoc-03fa46524ce9d0f36"
+    [1m[0mroute_table_id[0m[0m = "rtb-041f54bded551331a"
+    [1m[0msubnet_id[0m[0m      = "subnet-0ea1ee6e9fd99f37b"
+}
+
+# module.networking.aws_route_table_association.public[0]:
+resource "aws_route_table_association" "public" {
+    [1m[0mid[0m[0m             = "rtbassoc-0d5372986c9fe9d02"
+    [1m[0mroute_table_id[0m[0m = "rtb-0b360ecd4f8e7ccb1"
+    [1m[0msubnet_id[0m[0m      = "subnet-08eeae25ac65452e5"
+}
+
+# module.networking.aws_route_table_association.public[1]:
+resource "aws_route_table_association" "public" {
+    [1m[0mid[0m[0m             = "rtbassoc-0f204f8926d85e2b8"
+    [1m[0mroute_table_id[0m[0m = "rtb-0b360ecd4f8e7ccb1"
+    [1m[0msubnet_id[0m[0m      = "subnet-0b2948db36e550bbd"
+}
+
+# module.networking.aws_security_group.bastion:
+resource "aws_security_group" "bastion" {
+    [1m[0marn[0m[0m                    = "arn:aws:ec2:eu-west-2:467952971505:security-group/sg-081e5098365d6cdaf"
+    [1m[0mdescription[0m[0m            = "Security group for the bastion server"
+    [1m[0megress[0m[0m                 = []
+    [1m[0mid[0m[0m                     = "sg-081e5098365d6cdaf"
+    [1m[0mingress[0m[0m                = [
+        {
+            cidr_blocks      = [
+                "0.0.0.0/0",
+            ]
+            description      = ""
+            from_port        = 22
+            ipv6_cidr_blocks = []
+            prefix_list_ids  = []
+            protocol         = "tcp"
+            security_groups  = []
+            self             = false
+            to_port          = 22
+        },
+    ]
+    [1m[0mname[0m[0m                   = "eo-bastion"
+    [1m[0mowner_id[0m[0m               = "467952971505"
+    [1m[0mrevoke_rules_on_delete[0m[0m = false
+    [1m[0mtags[0m[0m                   = {
+        "Name" = "eo-bastion-sg"
+    }
+    [1m[0mtags_all[0m[0m               = {
+        "Name" = "eo-bastion-sg"
+    }
+    [1m[0mvpc_id[0m[0m                 = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_security_group.default:
+resource "aws_security_group" "default" {
+    [1m[0marn[0m[0m                    = "arn:aws:ec2:eu-west-2:467952971505:security-group/sg-061e09edcd72f8e55"
+    [1m[0mdescription[0m[0m            = "Default security group to allow inbound/outbound from the VPC"
+    [1m[0megress[0m[0m                 = [
+        {
+            cidr_blocks      = [
+                "0.0.0.0/0",
+            ]
+            description      = ""
+            from_port        = 0
+            ipv6_cidr_blocks = [
+                "::/0",
+            ]
+            prefix_list_ids  = []
+            protocol         = "-1"
+            security_groups  = []
+            self             = false
+            to_port          = 0
+        },
+    ]
+    [1m[0mid[0m[0m                     = "sg-061e09edcd72f8e55"
+    [1m[0mingress[0m[0m                = [
+        {
+            cidr_blocks      = [
+                "0.0.0.0/0",
+            ]
+            description      = ""
+            from_port        = 22
+            ipv6_cidr_blocks = [
+                "::/0",
+            ]
+            prefix_list_ids  = []
+            protocol         = "tcp"
+            security_groups  = []
+            self             = true
+            to_port          = 22
+        },
+    ]
+    [1m[0mname[0m[0m                   = "eo-default-sg"
+    [1m[0mowner_id[0m[0m               = "467952971505"
+    [1m[0mrevoke_rules_on_delete[0m[0m = false
+    [1m[0mtags[0m[0m                   = {
+        "Environment" = "production"
+    }
+    [1m[0mtags_all[0m[0m               = {
+        "Environment" = "production"
+    }
+    [1m[0mvpc_id[0m[0m                 = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_security_group_rule.ssh-bastion-world:
+resource "aws_security_group_rule" "ssh-bastion-world" {
+    [1m[0mcidr_blocks[0m[0m       = [
+        "0.0.0.0/0",
+    ]
+    [1m[0mfrom_port[0m[0m         = 22
+    [1m[0mid[0m[0m                = "sgrule-2125811416"
+    [1m[0mipv6_cidr_blocks[0m[0m  = []
+    [1m[0mprefix_list_ids[0m[0m   = []
+    [1m[0mprotocol[0m[0m          = "tcp"
+    [1m[0msecurity_group_id[0m[0m = "sg-081e5098365d6cdaf"
+    [1m[0mself[0m[0m              = false
+    [1m[0mto_port[0m[0m           = 22
+    [1m[0mtype[0m[0m              = "ingress"
+}
+
+# module.networking.aws_subnet.private_subnet[0]:
+resource "aws_subnet" "private_subnet" {
+    [1m[0marn[0m[0m                             = "arn:aws:ec2:eu-west-2:467952971505:subnet/subnet-0f138ca4274483112"
+    [1m[0massign_ipv6_address_on_creation[0m[0m = false
+    [1m[0mavailability_zone[0m[0m               = "eu-west-2a"
+    [1m[0mavailability_zone_id[0m[0m            = "euw2-az2"
+    [1m[0mcidr_block[0m[0m                      = "10.0.0.0/19"
+    [1m[0mid[0m[0m                              = "subnet-0f138ca4274483112"
+    [1m[0mmap_customer_owned_ip_on_launch[0m[0m = false
+    [1m[0mmap_public_ip_on_launch[0m[0m         = false
+    [1m[0mowner_id[0m[0m                        = "467952971505"
+    [1m[0mtags[0m[0m                            = {
+        "Environment" = "production"
+        "Name"        = "eo-private-eu-west-2a"
+    }
+    [1m[0mtags_all[0m[0m                        = {
+        "Environment" = "production"
+        "Name"        = "eo-private-eu-west-2a"
+    }
+    [1m[0mvpc_id[0m[0m                          = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_subnet.private_subnet[1]:
+resource "aws_subnet" "private_subnet" {
+    [1m[0marn[0m[0m                             = "arn:aws:ec2:eu-west-2:467952971505:subnet/subnet-0ea1ee6e9fd99f37b"
+    [1m[0massign_ipv6_address_on_creation[0m[0m = false
+    [1m[0mavailability_zone[0m[0m               = "eu-west-2b"
+    [1m[0mavailability_zone_id[0m[0m            = "euw2-az3"
+    [1m[0mcidr_block[0m[0m                      = "10.0.64.0/19"
+    [1m[0mid[0m[0m                              = "subnet-0ea1ee6e9fd99f37b"
+    [1m[0mmap_customer_owned_ip_on_launch[0m[0m = false
+    [1m[0mmap_public_ip_on_launch[0m[0m         = false
+    [1m[0mowner_id[0m[0m                        = "467952971505"
+    [1m[0mtags[0m[0m                            = {
+        "Environment" = "production"
+        "Name"        = "eo-private-eu-west-2b"
+    }
+    [1m[0mtags_all[0m[0m                        = {
+        "Environment" = "production"
+        "Name"        = "eo-private-eu-west-2b"
+    }
+    [1m[0mvpc_id[0m[0m                          = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_subnet.public_subnet[0]:
+resource "aws_subnet" "public_subnet" {
+    [1m[0marn[0m[0m                             = "arn:aws:ec2:eu-west-2:467952971505:subnet/subnet-08eeae25ac65452e5"
+    [1m[0massign_ipv6_address_on_creation[0m[0m = false
+    [1m[0mavailability_zone[0m[0m               = "eu-west-2a"
+    [1m[0mavailability_zone_id[0m[0m            = "euw2-az2"
+    [1m[0mcidr_block[0m[0m                      = "10.0.32.0/20"
+    [1m[0mid[0m[0m                              = "subnet-08eeae25ac65452e5"
+    [1m[0mmap_customer_owned_ip_on_launch[0m[0m = false
+    [1m[0mmap_public_ip_on_launch[0m[0m         = true
+    [1m[0mowner_id[0m[0m                        = "467952971505"
+    [1m[0mtags[0m[0m                            = {
+        "Environment" = "production"
+        "Name"        = "eo-public-eu-west-2a"
+    }
+    [1m[0mtags_all[0m[0m                        = {
+        "Environment" = "production"
+        "Name"        = "eo-public-eu-west-2a"
+    }
+    [1m[0mvpc_id[0m[0m                          = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_subnet.public_subnet[1]:
+resource "aws_subnet" "public_subnet" {
+    [1m[0marn[0m[0m                             = "arn:aws:ec2:eu-west-2:467952971505:subnet/subnet-0b2948db36e550bbd"
+    [1m[0massign_ipv6_address_on_creation[0m[0m = false
+    [1m[0mavailability_zone[0m[0m               = "eu-west-2b"
+    [1m[0mavailability_zone_id[0m[0m            = "euw2-az3"
+    [1m[0mcidr_block[0m[0m                      = "10.0.96.0/20"
+    [1m[0mid[0m[0m                              = "subnet-0b2948db36e550bbd"
+    [1m[0mmap_customer_owned_ip_on_launch[0m[0m = false
+    [1m[0mmap_public_ip_on_launch[0m[0m         = true
+    [1m[0mowner_id[0m[0m                        = "467952971505"
+    [1m[0mtags[0m[0m                            = {
+        "Environment" = "production"
+        "Name"        = "eo-public-eu-west-2b"
+    }
+    [1m[0mtags_all[0m[0m                        = {
+        "Environment" = "production"
+        "Name"        = "eo-public-eu-west-2b"
+    }
+    [1m[0mvpc_id[0m[0m                          = "vpc-027dc20a153861e9b"
+}
+
+# module.networking.aws_vpc.vpc:
+resource "aws_vpc" "vpc" {
+    [1m[0marn[0m[0m                              = "arn:aws:ec2:eu-west-2:467952971505:vpc/vpc-027dc20a153861e9b"
+    [1m[0massign_generated_ipv6_cidr_block[0m[0m = false
+    [1m[0mcidr_block[0m[0m                       = "10.0.0.0/16"
+    [1m[0mdefault_network_acl_id[0m[0m           = "acl-07e74f5d69a877019"
+    [1m[0mdefault_route_table_id[0m[0m           = "rtb-0d033a74cebe9087b"
+    [1m[0mdefault_security_group_id[0m[0m        = "sg-056de7944d18c6c49"
+    [1m[0mdhcp_options_id[0m[0m                  = "dopt-00f5eeeca7ad6cd4c"
+    [1m[0menable_dns_hostnames[0m[0m             = true
+    [1m[0menable_dns_support[0m[0m               = true
+    [1m[0mid[0m[0m                               = "vpc-027dc20a153861e9b"
+    [1m[0minstance_tenancy[0m[0m                 = "default"
+    [1m[0mmain_route_table_id[0m[0m              = "rtb-0d033a74cebe9087b"
+    [1m[0mowner_id[0m[0m                         = "467952971505"
+    [1m[0mtags[0m[0m                             = {
+        "Environment" = "production"
+        "Name"        = "eo-vpc"
+    }
+    [1m[0mtags_all[0m[0m                         = {
+        "Environment" = "production"
+        "Name"        = "eo-vpc"
+    }
+}
+
+# module.networking.data.aws_ami_ids.centos7:
+data "aws_ami_ids" "centos7" {
+    [1m[0mid[0m[0m             = "3061804323"
+    [1m[0mids[0m[0m            = [
+        "ami-0bab5c8be0975423b",
+    ]
+    [1m[0mowners[0m[0m         = [
+        "aws-marketplace",
+    ]
+    [1m[0msort_ascending[0m[0m = false
+
+    filter {
+        [1m[0mname[0m[0m   = "name"
+        [1m[0mvalues[0m[0m = [
+            "CentOS-7-*x86_64-*",
+        ]
+    }
+    filter {
+        [1m[0mname[0m[0m   = "product-code"
+        [1m[0mvalues[0m[0m = [
+            "cvugziknvmxgqna9noibqnnsy",
+        ]
+    }
+}[0m[0m

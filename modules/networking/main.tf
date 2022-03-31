@@ -47,7 +47,7 @@ resource "aws_subnet" "public_subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name        = "${var.project}-${element(var.availability_zones, count.index)}-public-subnet"
+    Name        = "${var.project}-public-${element(var.availability_zones, count.index)}"
     Environment = "${var.environment}"
   }
 }
@@ -61,7 +61,7 @@ resource "aws_subnet" "private_subnet" {
   map_public_ip_on_launch = false
 
   tags = {
-    Name        = "${var.project}-${element(var.availability_zones, count.index)}-private-subnet"
+    Name        = "${var.project}-private-${element(var.availability_zones, count.index)}"
     Environment = "${var.environment}"
   }
 }
@@ -140,4 +140,69 @@ resource "aws_security_group" "default" {
   tags = {
     Environment = "${var.environment}"
   }
+}
+
+/*==== Bastion host ======*/
+resource "aws_instance" "bastion" {
+  ami = data.aws_ami_ids.centos7.ids[0]
+  associate_public_ip_address = true
+  instance_type = "t3a.nano"
+  subnet_id = aws_subnet.public_subnet[0].id
+  vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
+  key_name = aws_key_pair.main.key_name
+
+  tags = {
+    Name = "${var.project}-bastion"
+  }
+}
+
+data "aws_ami_ids" "centos7" {
+  owners = ["aws-marketplace"]
+
+  filter {
+    name   = "product-code"
+    values = ["cvugziknvmxgqna9noibqnnsy"]
+  }
+  filter {
+    name   = "name"
+    values = ["CentOS-7-*x86_64-*"]
+  }
+}
+
+resource "aws_eip" "bastion" {
+  vpc        = true
+  instance   = aws_instance.bastion.id
+  depends_on = [aws_internet_gateway.ig]
+}
+
+resource "aws_security_group" "bastion" {
+  name = "${var.project}-bastion"
+  description = "Security group for the bastion server"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project}-bastion-sg"
+  }
+}
+
+resource "aws_security_group_rule" "ssh-bastion-world" {
+  type = "ingress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  # Please restrict your ingress to only necessary IPs and ports.
+  # Opening to 0.0.0.0/0 can lead to security vulnerabilities
+  # You may want to set a fixed ip address if you have a static ip
+  security_group_id = aws_security_group.bastion.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+// tanvir-key-pair-467952971505.rsa.pub
+resource "aws_key_pair" "main" {
+  key_name = "${var.project}-tanvir-key"
+  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgoYgZrq/LuyTD/NTq1tVorS90Gy+k4dTyczj8d422nAGoeAOUVyUEfxnyX061sgqCIPJaX0rWd85ukLUKWW8qN84rpyD9Lb/JUmlwDPlMFS5zBNXwIzyHZuvMxP1Xq2yhXTWHKJk03dqDyNAPBvYGxrvxbfQhE8zc1VQKnascuYJcZIdTXBn4jRqtjF0lc5hg7qFx1EQv5bLNXmCiGkgHurj3imTa6Qb2mbOrYviWy75pBllWFgNNuh3z2/VttDnTHqAW3bfsH5wm6gIWWqP7va+7RBA1B+hotI3/nmHR5rqXhTVmn1ecfQ0jYaN53X9RAz/naIeqEp/8bNZuQPQd"
+}
+
+output "bastion_public_ip" {
+  value = aws_instance.bastion.public_ip
 }

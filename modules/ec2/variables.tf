@@ -1,23 +1,22 @@
 variable "project" {
-  description = "Empower Office AWS Hosting"
+  description = "The name of the project"
 }
 
 variable "environment" {
   description = "The deployment environment"
-  default     = "production"
 }
 
 variable "region" {
   description = "The AWS Region"
 }
 
-variable "profile" {
-  description = "The AWS Profile"
-}
-
 variable "availability_zones" {
   type        = list(any)
   description = "The names of the availability zones to use"
+}
+
+variable "vpc_id" {
+  description = "The ID of the vpc"
 }
 
 variable "vpc_cidr" {
