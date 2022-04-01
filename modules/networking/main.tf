@@ -142,6 +142,36 @@ resource "aws_security_group" "default" {
   }
 }
 
+/*==== Data sources: AMIs ======*/
+// https://aws.amazon.com/marketplace/pp/prodview-foff247vr2zfw
+// https://wiki.centos.org/Cloud/AWS
+data "aws_ami_ids" "centos7" {
+  owners = ["aws-marketplace"]
+
+  filter {
+    name   = "product-code"
+    values = ["cvugziknvmxgqna9noibqnnsy"]
+  }
+  filter {
+    name   = "name"
+    values = ["CentOS-7-*x86_64-*"]
+  }
+}
+
+// https://aws.amazon.com/marketplace/pp/prodview-nejgiy45fvv4m
+data "aws_ami_ids" "virtuozzo7" {
+  owners = ["aws-marketplace"]
+
+  filter {
+    name   = "product-code"
+    values = ["8ksrxjo08vh1tkcw170zt1p2e"]
+  }
+  filter {
+    name   = "name"
+    values = ["Virtuozzo 7*"]
+  }
+}
+
 /*==== Bastion host ======*/
 resource "aws_instance" "bastion" {
   ami = data.aws_ami_ids.centos7.ids[0]
@@ -156,19 +186,6 @@ resource "aws_instance" "bastion" {
   }
 }
 
-data "aws_ami_ids" "centos7" {
-  owners = ["aws-marketplace"]
-
-  filter {
-    name   = "product-code"
-    values = ["cvugziknvmxgqna9noibqnnsy"]
-  }
-  filter {
-    name   = "name"
-    values = ["CentOS-7-*x86_64-*"]
-  }
-}
-
 resource "aws_eip" "bastion" {
   vpc        = true
   instance   = aws_instance.bastion.id
@@ -176,12 +193,12 @@ resource "aws_eip" "bastion" {
 }
 
 resource "aws_security_group" "bastion" {
-  name = "${var.project}-bastion"
+  name = "${var.project}-bastion-sg"
   description = "Security group for the bastion server"
   vpc_id = aws_vpc.vpc.id
 
   tags = {
-    Name = "${var.project}-bastion-sg"
+    Name = "${var.project}-bastion"
   }
 }
 
@@ -197,6 +214,26 @@ resource "aws_security_group_rule" "ssh-bastion-world" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
+/*
+resource "aws_security_group_rule" "ssh-bastion-webapp" {
+  type = "egress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  security_group_id = aws_security_group.bastion.id
+  source_security_group_id = aws_security_group.webapp.id
+}
+
+resource "aws_security_group_rule" "ssh-bastion-pgdb" {
+  type = "egress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  security_group_id = aws_security_group.bastion.id
+  source_security_group_id = aws_security_group.pgdb.id
+}
+*/
+
 // tanvir-key-pair-467952971505.rsa.pub
 resource "aws_key_pair" "main" {
   key_name = "${var.project}-tanvir-key"
@@ -205,4 +242,214 @@ resource "aws_key_pair" "main" {
 
 output "bastion_public_ip" {
   value = aws_instance.bastion.public_ip
+}
+
+/*==== Application and web server ======*/
+resource "aws_instance" "webapp" {
+  ami = data.aws_ami_ids.virtuozzo7.ids[0]
+  instance_type = "m5.large"
+  subnet_id = aws_subnet.private_subnet[0].id
+  vpc_security_group_ids = ["${aws_security_group.webapp.id}"]
+  key_name = aws_key_pair.main.key_name
+
+  tags = {
+    Name = "${var.project}-webapp"
+  }
+}
+
+resource "aws_security_group" "webapp" {
+  name = "${var.project}-webapp-sg"
+  description = "For Web and app servers"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project}-webapp"
+  }
+}
+
+resource "aws_security_group_rule" "ssh-webapp-bastion" {
+  type = "ingress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  security_group_id = aws_security_group.webapp.id
+  source_security_group_id = aws_security_group.bastion.id
+}
+
+resource "aws_security_group_rule" "https-webapp-bastion" {
+  type = "ingress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  security_group_id = aws_security_group.webapp.id
+  source_security_group_id = aws_security_group.bastion.id
+}
+
+resource "aws_security_group_rule" "pgsql-webapp-pgdb" {
+  type = "egress"
+  from_port = 5432
+  to_port = 5432
+  protocol = "tcp"
+  security_group_id = aws_security_group.pgdb.id
+  source_security_group_id = aws_security_group.webapp.id
+}
+
+/*==== Database server (primary) ======*/
+resource "aws_instance" "pgdb" {
+  ami = data.aws_ami_ids.centos7.ids[0]
+  instance_type = "m5.large"
+  subnet_id = aws_subnet.private_subnet[0].id
+  vpc_security_group_ids = ["${aws_security_group.pgdb.id}"]
+  key_name = aws_key_pair.main.key_name
+
+  tags = {
+    Name = "${var.project}-pgdb"
+  }
+}
+
+resource "aws_security_group" "pgdb" {
+  name = "${var.project}-pgdb-sg"
+  description = "For Database servers"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project}-pgdb"
+  }
+}
+
+resource "aws_security_group_rule" "ssh-pgdb-bastion" {
+  type = "ingress"
+  from_port = 22
+  to_port = 22
+  protocol = "tcp"
+  security_group_id = aws_security_group.pgdb.id
+  source_security_group_id = aws_security_group.bastion.id
+}
+
+resource "aws_security_group_rule" "pgsql-pgdb-webapp" {
+  type = "ingress"
+  from_port = 5432
+  to_port = 5432
+  protocol = "tcp"
+  security_group_id = aws_security_group.pgdb.id
+  source_security_group_id = aws_security_group.webapp.id
+}
+
+
+/*==== Application load balancer ====*/
+resource "aws_s3_bucket" "alb_logs" {
+  bucket = "${var.project}-alb-logs"
+
+  tags = {
+    Name        = "${var.project}-alb-logs"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_s3_bucket_acl" "alb_logs_acl" {
+  bucket = aws_s3_bucket.alb_logs.id
+  //acl    = "private"
+  acl    = "log-delivery-write"
+}
+
+resource "aws_security_group" "alb" {
+  name = "${var.project}-alb-sg"
+  description = "For Application load balancer"
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "${var.project}-alb"
+  }
+}
+
+resource "aws_security_group_rule" "http-alb-world" {
+  type = "ingress"
+  from_port = 80
+  to_port = 80
+  protocol = "tcp"
+  security_group_id = aws_security_group.alb.id
+  //source_security_group_id = aws_security_group.bastion.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "https-alb-world" {
+  type = "ingress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  security_group_id = aws_security_group.alb.id
+  //source_security_group_id = aws_security_group.bastion.id
+  cidr_blocks = ["0.0.0.0/0"]
+}
+
+resource "aws_security_group_rule" "https-alb-bastion" {
+  type = "egress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  security_group_id = aws_security_group.alb.id
+  source_security_group_id = aws_security_group.bastion.id
+}
+
+resource "aws_alb" "alb" {
+  name               = "${var.project}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.alb.id]
+  subnets            = [for subnet in aws_subnet.public_subnet : subnet.id]
+
+  enable_deletion_protection = true
+
+  /*access_logs {
+    bucket  = aws_s3_bucket.alb_logs.bucket
+    prefix  = "${var.project}-alb"
+    enabled = true
+  }*/
+
+  tags = {
+    Name = "${var.project}-alb"
+    Environment = "${var.environment}"
+  }
+}
+
+resource "aws_alb_listener" "alb_listener_http" {
+  load_balancer_arn = aws_alb.alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_alb_listener" "alb_listener_https" {
+  load_balancer_arn = aws_alb.alb.arn
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "arn:aws:acm:eu-west-2:467952971505:certificate/946deaf2-fb05-46e8-aee1-727e7ac8302a"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_alb_target_group.alb_target_group_https.arn
+  }
+}
+
+resource "aws_alb_target_group" "alb_target_group_https" {
+  name     = "alb-tg-https"
+  port     = 443
+  protocol = "HTTPS"
+  vpc_id   = aws_vpc.vpc.id
+}
+
+resource "aws_alb_target_group_attachment" "alb-tg-https-bastion" {
+  target_group_arn = aws_alb_target_group.alb_target_group_https.arn
+  target_id        = aws_instance.bastion.id
+  port             = 443
 }

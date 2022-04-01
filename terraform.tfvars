@@ -2,7 +2,7 @@ project               = "eo"
 environment           = "production"
 region                = "eu-west-2"
 profile               = "m4travel"
-availability_zones    = ["eu-west-2a", "eu-west-2b"]
+availability_zones    = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 // https://medium.com/aws-activate-startup-blog/practical-vpc-design-8412e1a18dcc
 /*
 10.0.0.0/16:
@@ -30,5 +30,5 @@ availability_zones    = ["eu-west-2a", "eu-west-2b"]
     10.0.192.0/18 — Spare
 */
 vpc_cidr              = "10.0.0.0/16"
-private_subnets_cidr  = ["10.0.0.0/19", "10.0.64.0/19"] // List of private subnet cidr range
-public_subnets_cidr   = ["10.0.32.0/20", "10.0.96.0/20"] // List of public subnet cidr range
+private_subnets_cidr  = ["10.0.0.0/19", "10.0.64.0/19", "10.0.128.0/19"]
+public_subnets_cidr   = ["10.0.32.0/20", "10.0.96.0/20", "10.0.160.0/20"]

@@ -1,0 +1,343 @@
+[0m[1mmodule.networking.aws_key_pair.main: Refreshing state... [id=eo-tanvir-key][0m
+[0m[1mmodule.networking.aws_vpc.vpc: Refreshing state... [id=vpc-0f31aa7cac4f698ee][0m
+[0m[1mmodule.networking.aws_internet_gateway.ig: Refreshing state... [id=igw-0d1fcfb11d028b053][0m
+[0m[1mmodule.networking.aws_security_group.webapp: Refreshing state... [id=sg-0839ac72721982654][0m
+[0m[1mmodule.networking.aws_route_table.private: Refreshing state... [id=rtb-078bc2ab4526b95ab][0m
+[0m[1mmodule.networking.aws_security_group.bastion: Refreshing state... [id=sg-0a131ef15de3a5b2b][0m
+[0m[1mmodule.networking.aws_security_group.default: Refreshing state... [id=sg-0e8e5800655c26d4a][0m
+[0m[1mmodule.networking.aws_security_group.pgdb: Refreshing state... [id=sg-0bc7bcf8ad283c57f][0m
+[0m[1mmodule.networking.aws_route_table.public: Refreshing state... [id=rtb-0eb0c635da488bd27][0m
+[0m[1mmodule.networking.aws_subnet.public_subnet[0]: Refreshing state... [id=subnet-063e32c2fa4426788][0m
+[0m[1mmodule.networking.aws_subnet.public_subnet[1]: Refreshing state... [id=subnet-0daeb75e0f5f7ae24][0m
+[0m[1mmodule.networking.aws_subnet.private_subnet[0]: Refreshing state... [id=subnet-073450b6e8f2408ac][0m
+[0m[1mmodule.networking.aws_subnet.private_subnet[1]: Refreshing state... [id=subnet-0672898d0095b9a24][0m
+[0m[1mmodule.networking.aws_security_group_rule.ssh-bastion-world: Refreshing state... [id=sgrule-820765587][0m
+[0m[1mmodule.networking.aws_security_group_rule.ssh-bastion-pgdb: Refreshing state... [id=sgrule-3324831683][0m
+[0m[1mmodule.networking.aws_security_group_rule.ssh-pgdb-bastion: Refreshing state... [id=sgrule-1841118895][0m
+[0m[1mmodule.networking.aws_security_group_rule.pgsql-webapp-pgdb: Refreshing state... [id=sgrule-2868787651][0m
+[0m[1mmodule.networking.aws_security_group_rule.ssh-bastion-webapp: Refreshing state... [id=sgrule-2468770532][0m
+[0m[1mmodule.networking.aws_security_group_rule.pgsql-pgdb-webapp: Refreshing state... [id=sgrule-2161864162][0m
+[0m[1mmodule.networking.aws_security_group_rule.ssh-webapp-bastion: Refreshing state... [id=sgrule-2414199131][0m
+[0m[1mmodule.networking.aws_eip.nat_eip: Refreshing state... [id=eipalloc-0672f2db2aaf08911][0m
+[0m[1mmodule.networking.aws_route.public_internet_gateway: Refreshing state... [id=r-rtb-0eb0c635da488bd271080289494][0m
+[0m[1mmodule.networking.aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0edf9fb305360065b][0m
+[0m[1mmodule.networking.aws_instance.bastion: Refreshing state... [id=i-0f57967765ce7f342][0m
+[0m[1mmodule.networking.aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-0703ef22c0db6cef9][0m
+[0m[1mmodule.networking.aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-025793dbf07e21ab2][0m
+[0m[1mmodule.networking.aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-03be13c4fb5b85678][0m
+[0m[1mmodule.networking.aws_instance.pgdb: Refreshing state... [id=i-08f6319f50df502ab][0m
+[0m[1mmodule.networking.aws_nat_gateway.nat: Refreshing state... [id=nat-055c0335aa7b9c8e1][0m
+[0m[1mmodule.networking.aws_route.private_nat_gateway: Refreshing state... [id=r-rtb-078bc2ab4526b95ab1080289494][0m
+[0m[1mmodule.networking.aws_eip.bastion: Refreshing state... [id=eipalloc-09c0094e11a4444ff][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create
+  [33m~[0m update in-place
+[0m
+Terraform will perform the following actions:
+
+[1m  # module.networking.aws_alb.alb[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_alb" "alb" {
+      [32m+[0m [0m[1m[0marn[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0marn_suffix[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mdns_name[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mdrop_invalid_header_fields[0m[0m = false
+      [32m+[0m [0m[1m[0menable_deletion_protection[0m[0m = true
+      [32m+[0m [0m[1m[0menable_http2[0m[0m               = true
+      [32m+[0m [0m[1m[0mid[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0midle_timeout[0m[0m               = 60
+      [32m+[0m [0m[1m[0minternal[0m[0m                   = false
+      [32m+[0m [0m[1m[0mip_address_type[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mload_balancer_type[0m[0m         = "application"
+      [32m+[0m [0m[1m[0mname[0m[0m                       = "eo-alb"
+      [32m+[0m [0m[1m[0msecurity_groups[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0msubnets[0m[0m                    = [
+          [32m+[0m [0m"subnet-063e32c2fa4426788",
+          [32m+[0m [0m"subnet-0daeb75e0f5f7ae24",
+        ]
+      [32m+[0m [0m[1m[0mtags[0m[0m                       = {
+          [32m+[0m [0m"Environment" = "production"
+          [32m+[0m [0m"Name"        = "eo-alb"
+        }
+      [32m+[0m [0m[1m[0mtags_all[0m[0m                   = {
+          [32m+[0m [0m"Environment" = "production"
+          [32m+[0m [0m"Name"        = "eo-alb"
+        }
+      [32m+[0m [0m[1m[0mvpc_id[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mzone_id[0m[0m                    = (known after apply)
+
+      [32m+[0m [0maccess_logs {
+          [32m+[0m [0m[1m[0mbucket[0m[0m  = "eo-alb-logs"
+          [32m+[0m [0m[1m[0menabled[0m[0m = true
+          [32m+[0m [0m[1m[0mprefix[0m[0m  = "eo-alb"
+        }
+
+      [32m+[0m [0msubnet_mapping {
+          [32m+[0m [0m[1m[0mallocation_id[0m[0m        = (known after apply)
+          [32m+[0m [0m[1m[0mipv6_address[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0moutpost_id[0m[0m           = (known after apply)
+          [32m+[0m [0m[1m[0mprivate_ipv4_address[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0msubnet_id[0m[0m            = (known after apply)
+        }
+    }
+
+[1m  # module.networking.aws_alb_listener.alb_listener_https[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_alb_listener" "alb_listener_https" {
+      [32m+[0m [0m[1m[0marn[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mcertificate_arn[0m[0m   = "arn:aws:iam::187416307283:server-certificate/test_cert_rab3wuqwgja25ct3n4jdj2tzu4"
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mload_balancer_arn[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mport[0m[0m              = 443
+      [32m+[0m [0m[1m[0mprotocol[0m[0m          = "HTTPS"
+      [32m+[0m [0m[1m[0mssl_policy[0m[0m        = "ELBSecurityPolicy-2016-08"
+
+      [32m+[0m [0mdefault_action {
+          [32m+[0m [0m[1m[0morder[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0mtarget_group_arn[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mtype[0m[0m             = "forward"
+        }
+    }
+
+[1m  # module.networking.aws_alb_target_group.alb_target_group_https[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_alb_target_group" "alb_target_group_https" {
+      [32m+[0m [0m[1m[0marn[0m[0m                                = (known after apply)
+      [32m+[0m [0m[1m[0marn_suffix[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mderegistration_delay[0m[0m               = 300
+      [32m+[0m [0m[1m[0mid[0m[0m                                 = (known after apply)
+      [32m+[0m [0m[1m[0mlambda_multi_value_headers_enabled[0m[0m = false
+      [32m+[0m [0m[1m[0mload_balancing_algorithm_type[0m[0m      = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m                               = "alb-tg-https"
+      [32m+[0m [0m[1m[0mport[0m[0m                               = 443
+      [32m+[0m [0m[1m[0mpreserve_client_ip[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                           = "HTTPS"
+      [32m+[0m [0m[1m[0mprotocol_version[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mproxy_protocol_v2[0m[0m                  = false
+      [32m+[0m [0m[1m[0mslow_start[0m[0m                         = 0
+      [32m+[0m [0m[1m[0mtags_all[0m[0m                           = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_type[0m[0m                        = "instance"
+      [32m+[0m [0m[1m[0mvpc_id[0m[0m                             = "vpc-0f31aa7cac4f698ee"
+
+      [32m+[0m [0mhealth_check {
+          [32m+[0m [0m[1m[0menabled[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0mhealthy_threshold[0m[0m   = (known after apply)
+          [32m+[0m [0m[1m[0minterval[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0mmatcher[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0mpath[0m[0m                = (known after apply)
+          [32m+[0m [0m[1m[0mport[0m[0m                = (known after apply)
+          [32m+[0m [0m[1m[0mprotocol[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0mtimeout[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0munhealthy_threshold[0m[0m = (known after apply)
+        }
+
+      [32m+[0m [0mstickiness {
+          [32m+[0m [0m[1m[0mcookie_duration[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0menabled[0m[0m         = (known after apply)
+          [32m+[0m [0m[1m[0mtype[0m[0m            = (known after apply)
+        }
+    }
+
+[1m  # module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_alb_target_group_attachment" "alb-tg-https-bastion" {
+      [32m+[0m [0m[1m[0mid[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mport[0m[0m             = 443
+      [32m+[0m [0m[1m[0mtarget_group_arn[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mtarget_id[0m[0m        = "i-0f57967765ce7f342"
+    }
+
+[1m  # module.networking.aws_instance.pgdb[0m will be updated in-place[0m[0m
+[0m  [33m~[0m[0m resource "aws_instance" "pgdb" {
+        [1m[0mid[0m[0m                                   = "i-08f6319f50df502ab"
+      [33m~[0m [0m[1m[0minstance_type[0m[0m                        = "m5.xlarge" [33m->[0m [0m"m5.large"
+        [1m[0mtags[0m[0m                                 = {
+            "Name" = "eo-pgdb"
+        }
+        [90m# (26 unchanged attributes hidden)[0m[0m
+
+
+
+        [90m# (3 unchanged blocks hidden)[0m[0m
+    }
+
+[1m  # module.networking.aws_instance.webapp[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_instance" "webapp" {
+      [32m+[0m [0m[1m[0mami[0m[0m                                  = "ami-3313ff54"
+      [32m+[0m [0m[1m[0marn[0m[0m                                  = (known after apply)
+      [32m+[0m [0m[1m[0massociate_public_ip_address[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mavailability_zone[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mcpu_core_count[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mcpu_threads_per_core[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mget_password_data[0m[0m                    = false
+      [32m+[0m [0m[1m[0mhost_id[0m[0m                              = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                                   = (known after apply)
+      [32m+[0m [0m[1m[0minstance_initiated_shutdown_behavior[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0minstance_state[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0minstance_type[0m[0m                        = "m5.large"
+      [32m+[0m [0m[1m[0mipv6_address_count[0m[0m                   = (known after apply)
+      [32m+[0m [0m[1m[0mipv6_addresses[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mkey_name[0m[0m                             = "eo-tanvir-key"
+      [32m+[0m [0m[1m[0moutpost_arn[0m[0m                          = (known after apply)
+      [32m+[0m [0m[1m[0mpassword_data[0m[0m                        = (known after apply)
+      [32m+[0m [0m[1m[0mplacement_group[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mprimary_network_interface_id[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0mprivate_dns[0m[0m                          = (known after apply)
+      [32m+[0m [0m[1m[0mprivate_ip[0m[0m                           = (known after apply)
+      [32m+[0m [0m[1m[0mpublic_dns[0m[0m                           = (known after apply)
+      [32m+[0m [0m[1m[0mpublic_ip[0m[0m                            = (known after apply)
+      [32m+[0m [0m[1m[0msecondary_private_ips[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0msecurity_groups[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0msource_dest_check[0m[0m                    = true
+      [32m+[0m [0m[1m[0msubnet_id[0m[0m                            = "subnet-073450b6e8f2408ac"
+      [32m+[0m [0m[1m[0mtags[0m[0m                                 = {
+          [32m+[0m [0m"Name" = "eo-webapp"
+        }
+      [32m+[0m [0m[1m[0mtags_all[0m[0m                             = {
+          [32m+[0m [0m"Name" = "eo-webapp"
+        }
+      [32m+[0m [0m[1m[0mtenancy[0m[0m                              = (known after apply)
+      [32m+[0m [0m[1m[0mvpc_security_group_ids[0m[0m               = [
+          [32m+[0m [0m"sg-0839ac72721982654",
+        ]
+
+      [32m+[0m [0mebs_block_device {
+          [32m+[0m [0m[1m[0mdelete_on_termination[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mdevice_name[0m[0m           = (known after apply)
+          [32m+[0m [0m[1m[0mencrypted[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0miops[0m[0m                  = (known after apply)
+          [32m+[0m [0m[1m[0mkms_key_id[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0msnapshot_id[0m[0m           = (known after apply)
+          [32m+[0m [0m[1m[0mtags[0m[0m                  = (known after apply)
+          [32m+[0m [0m[1m[0mthroughput[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0mvolume_id[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0mvolume_size[0m[0m           = (known after apply)
+          [32m+[0m [0m[1m[0mvolume_type[0m[0m           = (known after apply)
+        }
+
+      [32m+[0m [0menclave_options {
+          [32m+[0m [0m[1m[0menabled[0m[0m = (known after apply)
+        }
+
+      [32m+[0m [0mephemeral_block_device {
+          [32m+[0m [0m[1m[0mdevice_name[0m[0m  = (known after apply)
+          [32m+[0m [0m[1m[0mno_device[0m[0m    = (known after apply)
+          [32m+[0m [0m[1m[0mvirtual_name[0m[0m = (known after apply)
+        }
+
+      [32m+[0m [0mmetadata_options {
+          [32m+[0m [0m[1m[0mhttp_endpoint[0m[0m               = (known after apply)
+          [32m+[0m [0m[1m[0mhttp_put_response_hop_limit[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mhttp_tokens[0m[0m                 = (known after apply)
+        }
+
+      [32m+[0m [0mnetwork_interface {
+          [32m+[0m [0m[1m[0mdelete_on_termination[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mdevice_index[0m[0m          = (known after apply)
+          [32m+[0m [0m[1m[0mnetwork_interface_id[0m[0m  = (known after apply)
+        }
+
+      [32m+[0m [0mroot_block_device {
+          [32m+[0m [0m[1m[0mdelete_on_termination[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mdevice_name[0m[0m           = (known after apply)
+          [32m+[0m [0m[1m[0mencrypted[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0miops[0m[0m                  = (known after apply)
+          [32m+[0m [0m[1m[0mkms_key_id[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0mtags[0m[0m                  = (known after apply)
+          [32m+[0m [0m[1m[0mthroughput[0m[0m            = (known after apply)
+          [32m+[0m [0m[1m[0mvolume_id[0m[0m             = (known after apply)
+          [32m+[0m [0m[1m[0mvolume_size[0m[0m           = (known after apply)
+          [32m+[0m [0m[1m[0mvolume_type[0m[0m           = (known after apply)
+        }
+    }
+
+[1m  # module.networking.aws_lb_listener.alb_listener_http[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_lb_listener" "alb_listener_http" {
+      [32m+[0m [0m[1m[0marn[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mload_balancer_arn[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mport[0m[0m              = 80
+      [32m+[0m [0m[1m[0mprotocol[0m[0m          = "HTTP"
+      [32m+[0m [0m[1m[0mssl_policy[0m[0m        = (known after apply)
+
+      [32m+[0m [0mdefault_action {
+          [32m+[0m [0m[1m[0morder[0m[0m = (known after apply)
+          [32m+[0m [0m[1m[0mtype[0m[0m  = "redirect"
+
+          [32m+[0m [0mredirect {
+              [32m+[0m [0m[1m[0mhost[0m[0m        = "#{host}"
+              [32m+[0m [0m[1m[0mpath[0m[0m        = "/#{path}"
+              [32m+[0m [0m[1m[0mport[0m[0m        = "443"
+              [32m+[0m [0m[1m[0mprotocol[0m[0m    = "HTTPS"
+              [32m+[0m [0m[1m[0mquery[0m[0m       = "#{query}"
+              [32m+[0m [0m[1m[0mstatus_code[0m[0m = "HTTP_301"
+            }
+        }
+    }
+
+[1m  # module.networking.aws_s3_bucket.alb_logs[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_s3_bucket" "alb_logs" {
+      [32m+[0m [0m[1m[0macceleration_status[0m[0m         = (known after apply)
+      [32m+[0m [0m[1m[0macl[0m[0m                         = "private"
+      [32m+[0m [0m[1m[0marn[0m[0m                         = (known after apply)
+      [32m+[0m [0m[1m[0mbucket[0m[0m                      = "eo-alb-logs"
+      [32m+[0m [0m[1m[0mbucket_domain_name[0m[0m          = (known after apply)
+      [32m+[0m [0m[1m[0mbucket_regional_domain_name[0m[0m = (known after apply)
+      [32m+[0m [0m[1m[0mforce_destroy[0m[0m               = false
+      [32m+[0m [0m[1m[0mhosted_zone_id[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                          = (known after apply)
+      [32m+[0m [0m[1m[0mregion[0m[0m                      = (known after apply)
+      [32m+[0m [0m[1m[0mrequest_payer[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mtags[0m[0m                        = {
+          [32m+[0m [0m"Environment" = "production"
+          [32m+[0m [0m"Name"        = "eo-alb-logs"
+        }
+      [32m+[0m [0m[1m[0mtags_all[0m[0m                    = {
+          [32m+[0m [0m"Environment" = "production"
+          [32m+[0m [0m"Name"        = "eo-alb-logs"
+        }
+      [32m+[0m [0m[1m[0mwebsite_domain[0m[0m              = (known after apply)
+      [32m+[0m [0m[1m[0mwebsite_endpoint[0m[0m            = (known after apply)
+
+      [32m+[0m [0mversioning {
+          [32m+[0m [0m[1m[0menabled[0m[0m    = (known after apply)
+          [32m+[0m [0m[1m[0mmfa_delete[0m[0m = (known after apply)
+        }
+    }
+
+[1m  # module.networking.aws_security_group.alb[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_security_group" "alb" {
+      [32m+[0m [0m[1m[0marn[0m[0m                    = (known after apply)
+      [32m+[0m [0m[1m[0mdescription[0m[0m            = "For Database servers"
+      [32m+[0m [0m[1m[0megress[0m[0m                 = (known after apply)
+      [32m+[0m [0m[1m[0mid[0m[0m                     = (known after apply)
+      [32m+[0m [0m[1m[0mingress[0m[0m                = (known after apply)
+      [32m+[0m [0m[1m[0mname[0m[0m                   = "eo-pgdb-sg"
+      [32m+[0m [0m[1m[0mname_prefix[0m[0m            = (known after apply)
+      [32m+[0m [0m[1m[0mowner_id[0m[0m               = (known after apply)
+      [32m+[0m [0m[1m[0mrevoke_rules_on_delete[0m[0m = false
+      [32m+[0m [0m[1m[0mtags[0m[0m                   = {
+          [32m+[0m [0m"Name" = "eo-pgdb"
+        }
+      [32m+[0m [0m[1m[0mtags_all[0m[0m               = {
+          [32m+[0m [0m"Name" = "eo-pgdb"
+        }
+      [32m+[0m [0m[1m[0mvpc_id[0m[0m                 = "vpc-0f31aa7cac4f698ee"
+    }
+
+[1m  # module.networking.aws_security_group_rule.https-alb-bastion[0m will be created[0m[0m
+[0m  [32m+[0m[0m resource "aws_security_group_rule" "https-alb-bastion" {
+      [32m+[0m [0m[1m[0mfrom_port[0m[0m                = 443
+      [32m+[0m [0m[1m[0mid[0m[0m                       = (known after apply)
+      [32m+[0m [0m[1m[0mprotocol[0m[0m                 = "tcp"
+      [32m+[0m [0m[1m[0msecurity_group_id[0m[0m        = (known after apply)
+      [32m+[0m [0m[1m[0mself[0m[0m                     = false
+      [32m+[0m [0m[1m[0msource_security_group_id[0m[0m = "sg-0a131ef15de3a5b2b"
+      [32m+[0m [0m[1m[0mto_port[0m[0m                  = 443
+      [32m+[0m [0m[1m[0mtype[0m[0m                     = "ingress"
+    }
+
+[0m[1mPlan:[0m 9 to add, 1 to change, 0 to destroy.
+[0m[90m
+─────────────────────────────────────────────────────────────────────────────[0m
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
