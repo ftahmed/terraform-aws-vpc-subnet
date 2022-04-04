@@ -1,0 +1,2112 @@
+✔ ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+14:52 $ terraform refresh
+module.networking.aws_vpc.vpc: Refreshing state... [id=vpc-0f31aa7cac4f698ee]
+module.networking.aws_internet_gateway.ig: Refreshing state... [id=igw-0d1fcfb11d028b053]
+module.networking.aws_security_group.alb: Refreshing state... [id=sg-005ac5b81222167fd]
+module.networking.aws_subnet.public_subnet[0]: Refreshing state... [id=subnet-063e32c2fa4426788]
+module.networking.aws_subnet.public_subnet[2]: Refreshing state... [id=subnet-017230b3d6124ed5a]
+module.networking.aws_subnet.public_subnet[1]: Refreshing state... [id=subnet-0daeb75e0f5f7ae24]
+module.networking.aws_alb.alb: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:loadbalancer/app/eo-alb/c7999a2e5dd06cef]
+✔ ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+14:53 $ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.networking.aws_alb.alb will be created
+  + resource "aws_alb" "alb" {
+      + arn                        = (known after apply)
+      + arn_suffix                 = (known after apply)
+      + desync_mitigation_mode     = "defensive"
+      + dns_name                   = (known after apply)
+      + drop_invalid_header_fields = false
+      + enable_deletion_protection = true
+      + enable_http2               = true
+      + enable_waf_fail_open       = false
+      + id                         = (known after apply)
+      + idle_timeout               = 60
+      + internal                   = false
+      + ip_address_type            = (known after apply)
+      + load_balancer_type         = "application"
+      + name                       = "eo-alb"
+      + security_groups            = (known after apply)
+      + subnets                    = (known after apply)
+      + tags                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-alb"
+        }
+      + tags_all                   = {
+          + "Environment" = "production"
+          + "Name"        = "eo-alb"
+        }
+      + vpc_id                     = (known after apply)
+      + zone_id                    = (known after apply)
+
+      + subnet_mapping {
+          + allocation_id        = (known after apply)
+          + ipv6_address         = (known after apply)
+          + outpost_id           = (known after apply)
+          + private_ipv4_address = (known after apply)
+          + subnet_id            = (known after apply)
+        }
+    }
+
+  # module.networking.aws_alb_listener.alb_listener_http will be created
+  + resource "aws_alb_listener" "alb_listener_http" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + load_balancer_arn = (known after apply)
+      + port              = 80
+      + protocol          = "HTTP"
+      + ssl_policy        = (known after apply)
+      + tags_all          = (known after apply)
+
+      + default_action {
+          + order = (known after apply)
+          + type  = "redirect"
+
+          + redirect {
+              + host        = "#{host}"
+              + path        = "/#{path}"
+              + port        = "443"
+              + protocol    = "HTTPS"
+              + query       = "#{query}"
+              + status_code = "HTTP_301"
+            }
+        }
+    }
+
+  # module.networking.aws_alb_listener.alb_listener_https will be created
+  + resource "aws_alb_listener" "alb_listener_https" {
+      + arn               = (known after apply)
+      + certificate_arn   = "arn:aws:acm:eu-west-2:467952971505:certificate/946deaf2-fb05-46e8-aee1-727e7ac8302a"
+      + id                = (known after apply)
+      + load_balancer_arn = (known after apply)
+      + port              = 443
+      + protocol          = "HTTPS"
+      + ssl_policy        = "ELBSecurityPolicy-2016-08"
+      + tags_all          = (known after apply)
+
+      + default_action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+    }
+
+  # module.networking.aws_alb_target_group.alb_target_group_https will be created
+  + resource "aws_alb_target_group" "alb_target_group_https" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = false
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancing_algorithm_type      = (known after apply)
+      + name                               = "alb-tg-https"
+      + port                               = 443
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTPS"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 0
+      + tags_all                           = (known after apply)
+      + target_type                        = "instance"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = (known after apply)
+          + healthy_threshold   = (known after apply)
+          + interval            = (known after apply)
+          + matcher             = (known after apply)
+          + path                = (known after apply)
+          + port                = (known after apply)
+          + protocol            = (known after apply)
+          + timeout             = (known after apply)
+          + unhealthy_threshold = (known after apply)
+        }
+
+      + stickiness {
+          + cookie_duration = (known after apply)
+          + cookie_name     = (known after apply)
+          + enabled         = (known after apply)
+          + type            = (known after apply)
+        }
+    }
+
+  # module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion will be created
+  + resource "aws_alb_target_group_attachment" "alb-tg-https-bastion" {
+      + id               = (known after apply)
+      + port             = 443
+      + target_group_arn = (known after apply)
+      + target_id        = (known after apply)
+    }
+
+  # module.networking.aws_eip.bastion will be created
+  + resource "aws_eip" "bastion" {
+      + allocation_id        = (known after apply)
+      + association_id       = (known after apply)
+      + carrier_ip           = (known after apply)
+      + customer_owned_ip    = (known after apply)
+      + domain               = (known after apply)
+      + id                   = (known after apply)
+      + instance             = (known after apply)
+      + network_border_group = (known after apply)
+      + network_interface    = (known after apply)
+      + private_dns          = (known after apply)
+      + private_ip           = (known after apply)
+      + public_dns           = (known after apply)
+      + public_ip            = (known after apply)
+      + public_ipv4_pool     = (known after apply)
+      + tags_all             = (known after apply)
+      + vpc                  = true
+    }
+
+  # module.networking.aws_eip.nat_eip will be created
+  + resource "aws_eip" "nat_eip" {
+      + allocation_id        = (known after apply)
+      + association_id       = (known after apply)
+      + carrier_ip           = (known after apply)
+      + customer_owned_ip    = (known after apply)
+      + domain               = (known after apply)
+      + id                   = (known after apply)
+      + instance             = (known after apply)
+      + network_border_group = (known after apply)
+      + network_interface    = (known after apply)
+      + private_dns          = (known after apply)
+      + private_ip           = (known after apply)
+      + public_dns           = (known after apply)
+      + public_ip            = (known after apply)
+      + public_ipv4_pool     = (known after apply)
+      + tags_all             = (known after apply)
+      + vpc                  = true
+    }
+
+  # module.networking.aws_instance.bastion will be created
+  + resource "aws_instance" "bastion" {
+      + ami                                  = "ami-0bab5c8be0975423b"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = true
+      + availability_zone                    = (known after apply)
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "t3a.nano"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = "eo-tanvir-key"
+      + monitoring                           = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + "Name" = "eo-bastion"
+        }
+      + tags_all                             = {
+          + "Name" = "eo-bastion"
+        }
+      + tenancy                              = (known after apply)
+      + user_data                            = (known after apply)
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = false
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification {
+          + capacity_reservation_preference = (known after apply)
+
+          + capacity_reservation_target {
+              + capacity_reservation_id = (known after apply)
+            }
+        }
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+  # module.networking.aws_instance.pgdb will be created
+  + resource "aws_instance" "pgdb" {
+      + ami                                  = "ami-0bab5c8be0975423b"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = (known after apply)
+      + availability_zone                    = (known after apply)
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "m5.large"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = "eo-tanvir-key"
+      + monitoring                           = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + "Name" = "eo-pgdb"
+        }
+      + tags_all                             = {
+          + "Name" = "eo-pgdb"
+        }
+      + tenancy                              = (known after apply)
+      + user_data                            = (known after apply)
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = false
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification {
+          + capacity_reservation_preference = (known after apply)
+
+          + capacity_reservation_target {
+              + capacity_reservation_id = (known after apply)
+            }
+        }
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+  # module.networking.aws_instance.webapp will be created
+  + resource "aws_instance" "webapp" {
+      + ami                                  = "ami-3313ff54"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = (known after apply)
+      + availability_zone                    = (known after apply)
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "m5.large"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = "eo-tanvir-key"
+      + monitoring                           = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + "Name" = "eo-webapp"
+        }
+      + tags_all                             = {
+          + "Name" = "eo-webapp"
+        }
+      + tenancy                              = (known after apply)
+      + user_data                            = (known after apply)
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = false
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification {
+          + capacity_reservation_preference = (known after apply)
+
+          + capacity_reservation_target {
+              + capacity_reservation_id = (known after apply)
+            }
+        }
+
+      + ebs_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + snapshot_id           = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+
+      + enclave_options {
+          + enabled = (known after apply)
+        }
+
+      + ephemeral_block_device {
+          + device_name  = (known after apply)
+          + no_device    = (known after apply)
+          + virtual_name = (known after apply)
+        }
+
+      + metadata_options {
+          + http_endpoint               = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = (known after apply)
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + network_interface {
+          + delete_on_termination = (known after apply)
+          + device_index          = (known after apply)
+          + network_interface_id  = (known after apply)
+        }
+
+      + root_block_device {
+          + delete_on_termination = (known after apply)
+          + device_name           = (known after apply)
+          + encrypted             = (known after apply)
+          + iops                  = (known after apply)
+          + kms_key_id            = (known after apply)
+          + tags                  = (known after apply)
+          + throughput            = (known after apply)
+          + volume_id             = (known after apply)
+          + volume_size           = (known after apply)
+          + volume_type           = (known after apply)
+        }
+    }
+
+  # module.networking.aws_internet_gateway.ig will be created
+  + resource "aws_internet_gateway" "ig" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + owner_id = (known after apply)
+      + tags     = {
+          + "Environment" = "production"
+          + "Name"        = "eo-igw"
+        }
+      + tags_all = {
+          + "Environment" = "production"
+          + "Name"        = "eo-igw"
+        }
+      + vpc_id   = (known after apply)
+    }
+
+  # module.networking.aws_key_pair.main will be created
+  + resource "aws_key_pair" "main" {
+      + arn             = (known after apply)
+      + fingerprint     = (known after apply)
+      + id              = (known after apply)
+      + key_name        = "eo-tanvir-key"
+      + key_name_prefix = (known after apply)
+      + key_pair_id     = (known after apply)
+      + public_key      = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDgoYgZrq/LuyTD/NTq1tVorS90Gy+k4dTyczj8d422nAGoeAOUVyUEfxnyX061sgqCIPJaX0rWd85ukLUKWW8qN84rpyD9Lb/JUmlwDPlMFS5zBNXwIzyHZuvMxP1Xq2yhXTWHKJk03dqDyNAPBvYGxrvxbfQhE8zc1VQKnascuYJcZIdTXBn4jRqtjF0lc5hg7qFx1EQv5bLNXmCiGkgHurj3imTa6Qb2mbOrYviWy75pBllWFgNNuh3z2/VttDnTHqAW3bfsH5wm6gIWWqP7va+7RBA1B+hotI3/nmHR5rqXhTVmn1ecfQ0jYaN53X9RAz/naIeqEp/8bNZuQPQd"
+      + tags_all        = (known after apply)
+    }
+
+  # module.networking.aws_nat_gateway.nat will be created
+  + resource "aws_nat_gateway" "nat" {
+      + allocation_id        = (known after apply)
+      + connectivity_type    = "public"
+      + id                   = (known after apply)
+      + network_interface_id = (known after apply)
+      + private_ip           = (known after apply)
+      + public_ip            = (known after apply)
+      + subnet_id            = (known after apply)
+      + tags                 = {
+          + "Environment" = "production"
+          + "Name"        = "eo-nat"
+        }
+      + tags_all             = {
+          + "Environment" = "production"
+          + "Name"        = "eo-nat"
+        }
+    }
+
+  # module.networking.aws_route.private_nat_gateway will be created
+  + resource "aws_route" "private_nat_gateway" {
+      + destination_cidr_block = "0.0.0.0/0"
+      + id                     = (known after apply)
+      + instance_id            = (known after apply)
+      + instance_owner_id      = (known after apply)
+      + nat_gateway_id         = (known after apply)
+      + network_interface_id   = (known after apply)
+      + origin                 = (known after apply)
+      + route_table_id         = (known after apply)
+      + state                  = (known after apply)
+    }
+
+  # module.networking.aws_route.public_internet_gateway will be created
+  + resource "aws_route" "public_internet_gateway" {
+      + destination_cidr_block = "0.0.0.0/0"
+      + gateway_id             = (known after apply)
+      + id                     = (known after apply)
+      + instance_id            = (known after apply)
+      + instance_owner_id      = (known after apply)
+      + network_interface_id   = (known after apply)
+      + origin                 = (known after apply)
+      + route_table_id         = (known after apply)
+      + state                  = (known after apply)
+    }
+
+  # module.networking.aws_route_table.private will be created
+  + resource "aws_route_table" "private" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = (known after apply)
+      + tags             = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-route-table"
+        }
+      + tags_all         = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-route-table"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.networking.aws_route_table.public will be created
+  + resource "aws_route_table" "public" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = (known after apply)
+      + tags             = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-route-table"
+        }
+      + tags_all         = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-route-table"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.networking.aws_route_table_association.private[0] will be created
+  + resource "aws_route_table_association" "private" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.networking.aws_route_table_association.private[1] will be created
+  + resource "aws_route_table_association" "private" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.networking.aws_route_table_association.private[2] will be created
+  + resource "aws_route_table_association" "private" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.networking.aws_route_table_association.public[0] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.networking.aws_route_table_association.public[1] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.networking.aws_route_table_association.public[2] will be created
+  + resource "aws_route_table_association" "public" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.networking.aws_s3_bucket.alb_logs will be created
+  + resource "aws_s3_bucket" "alb_logs" {
+      + acceleration_status                  = (known after apply)
+      + acl                                  = (known after apply)
+      + arn                                  = (known after apply)
+      + bucket                               = "eo-alb-logs"
+      + bucket_domain_name                   = (known after apply)
+      + bucket_regional_domain_name          = (known after apply)
+      + cors_rule                            = (known after apply)
+      + force_destroy                        = false
+      + grant                                = (known after apply)
+      + hosted_zone_id                       = (known after apply)
+      + id                                   = (known after apply)
+      + lifecycle_rule                       = (known after apply)
+      + logging                              = (known after apply)
+      + object_lock_enabled                  = (known after apply)
+      + policy                               = (known after apply)
+      + region                               = (known after apply)
+      + replication_configuration            = (known after apply)
+      + request_payer                        = (known after apply)
+      + server_side_encryption_configuration = (known after apply)
+      + tags                                 = {
+          + "Environment" = "production"
+          + "Name"        = "eo-alb-logs"
+        }
+      + tags_all                             = {
+          + "Environment" = "production"
+          + "Name"        = "eo-alb-logs"
+        }
+      + versioning                           = (known after apply)
+      + website                              = (known after apply)
+      + website_domain                       = (known after apply)
+      + website_endpoint                     = (known after apply)
+
+      + object_lock_configuration {
+          + object_lock_enabled = (known after apply)
+          + rule                = (known after apply)
+        }
+    }
+
+  # module.networking.aws_s3_bucket_acl.alb_logs_acl will be created
+  + resource "aws_s3_bucket_acl" "alb_logs_acl" {
+      + acl    = "log-delivery-write"
+      + bucket = (known after apply)
+      + id     = (known after apply)
+
+      + access_control_policy {
+          + grant {
+              + permission = (known after apply)
+
+              + grantee {
+                  + display_name  = (known after apply)
+                  + email_address = (known after apply)
+                  + id            = (known after apply)
+                  + type          = (known after apply)
+                  + uri           = (known after apply)
+                }
+            }
+
+          + owner {
+              + display_name = (known after apply)
+              + id           = (known after apply)
+            }
+        }
+    }
+
+  # module.networking.aws_security_group.alb will be created
+  + resource "aws_security_group" "alb" {
+      + arn                    = (known after apply)
+      + description            = "For Application load balancer"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "eo-alb-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "eo-alb"
+        }
+      + tags_all               = {
+          + "Name" = "eo-alb"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.networking.aws_security_group.bastion will be created
+  + resource "aws_security_group" "bastion" {
+      + arn                    = (known after apply)
+      + description            = "Security group for the bastion server"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "eo-bastion-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "eo-bastion"
+        }
+      + tags_all               = {
+          + "Name" = "eo-bastion"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.networking.aws_security_group.default will be created
+  + resource "aws_security_group" "default" {
+      + arn                    = (known after apply)
+      + description            = "Default security group to allow inbound/outbound from the VPC"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 0
+              + ipv6_cidr_blocks = [
+                  + "::/0",
+                ]
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 22
+              + ipv6_cidr_blocks = [
+                  + "::/0",
+                ]
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = true
+              + to_port          = 22
+            },
+        ]
+      + name                   = "eo-default-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "production"
+        }
+      + tags_all               = {
+          + "Environment" = "production"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.networking.aws_security_group.pgdb will be created
+  + resource "aws_security_group" "pgdb" {
+      + arn                    = (known after apply)
+      + description            = "For Database servers"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "eo-pgdb-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "eo-pgdb"
+        }
+      + tags_all               = {
+          + "Name" = "eo-pgdb"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.networking.aws_security_group.webapp will be created
+  + resource "aws_security_group" "webapp" {
+      + arn                    = (known after apply)
+      + description            = "For Web and app servers"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "eo-webapp-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "eo-webapp"
+        }
+      + tags_all               = {
+          + "Name" = "eo-webapp"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.networking.aws_security_group_rule.http-alb-world will be created
+  + resource "aws_security_group_rule" "http-alb-world" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 80
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 80
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.https-alb-bastion will be created
+  + resource "aws_security_group_rule" "https-alb-bastion" {
+      + from_port                = 443
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 443
+      + type                     = "egress"
+    }
+
+  # module.networking.aws_security_group_rule.https-alb-world will be created
+  + resource "aws_security_group_rule" "https-alb-world" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 443
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 443
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.https-webapp-bastion will be created
+  + resource "aws_security_group_rule" "https-webapp-bastion" {
+      + from_port                = 443
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 443
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.pgsql-pgdb-webapp will be created
+  + resource "aws_security_group_rule" "pgsql-pgdb-webapp" {
+      + from_port                = 5432
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 5432
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.pgsql-webapp-pgdb will be created
+  + resource "aws_security_group_rule" "pgsql-webapp-pgdb" {
+      + from_port                = 5432
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 5432
+      + type                     = "egress"
+    }
+
+  # module.networking.aws_security_group_rule.ssh-bastion-alb will be created
+  + resource "aws_security_group_rule" "ssh-bastion-alb" {
+      + from_port                = 443
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 443
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.ssh-bastion-webapp will be created
+  + resource "aws_security_group_rule" "ssh-bastion-webapp" {
+      + cidr_blocks              = [
+          + "10.0.0.0/16",
+        ]
+      + from_port                = 22
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 22
+      + type                     = "egress"
+    }
+
+  # module.networking.aws_security_group_rule.ssh-bastion-world will be created
+  + resource "aws_security_group_rule" "ssh-bastion-world" {
+      + cidr_blocks              = [
+          + "0.0.0.0/0",
+        ]
+      + from_port                = 22
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 22
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.ssh-pgdb-bastion will be created
+  + resource "aws_security_group_rule" "ssh-pgdb-bastion" {
+      + from_port                = 22
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 22
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_security_group_rule.ssh-webapp-bastion will be created
+  + resource "aws_security_group_rule" "ssh-webapp-bastion" {
+      + from_port                = 22
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = (known after apply)
+      + self                     = false
+      + source_security_group_id = (known after apply)
+      + to_port                  = 22
+      + type                     = "ingress"
+    }
+
+  # module.networking.aws_subnet.private_subnet[0] will be created
+  + resource "aws_subnet" "private_subnet" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-west-2a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.0.0/19"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-eu-west-2a"
+        }
+      + tags_all                                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-eu-west-2a"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.networking.aws_subnet.private_subnet[1] will be created
+  + resource "aws_subnet" "private_subnet" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-west-2b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.64.0/19"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-eu-west-2b"
+        }
+      + tags_all                                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-eu-west-2b"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.networking.aws_subnet.private_subnet[2] will be created
+  + resource "aws_subnet" "private_subnet" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-west-2c"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.128.0/19"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-eu-west-2c"
+        }
+      + tags_all                                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-private-eu-west-2c"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.networking.aws_subnet.public_subnet[0] will be created
+  + resource "aws_subnet" "public_subnet" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-west-2a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.32.0/20"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-eu-west-2a"
+        }
+      + tags_all                                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-eu-west-2a"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.networking.aws_subnet.public_subnet[1] will be created
+  + resource "aws_subnet" "public_subnet" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-west-2b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.96.0/20"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-eu-west-2b"
+        }
+      + tags_all                                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-eu-west-2b"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.networking.aws_subnet.public_subnet[2] will be created
+  + resource "aws_subnet" "public_subnet" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "eu-west-2c"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.160.0/20"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-eu-west-2c"
+        }
+      + tags_all                                       = {
+          + "Environment" = "production"
+          + "Name"        = "eo-public-eu-west-2c"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.networking.aws_vpc.vpc will be created
+  + resource "aws_vpc" "vpc" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_classiclink                   = (known after apply)
+      + enable_classiclink_dns_support       = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags                                 = {
+          + "Environment" = "production"
+          + "Name"        = "eo-vpc"
+        }
+      + tags_all                             = {
+          + "Environment" = "production"
+          + "Name"        = "eo-vpc"
+        }
+    }
+
+Plan: 48 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+module.networking.aws_key_pair.main: Creating...
+module.networking.aws_vpc.vpc: Creating...
+module.networking.aws_s3_bucket.alb_logs: Creating...
+module.networking.aws_key_pair.main: Creation complete after 1s [id=eo-tanvir-key]
+module.networking.aws_vpc.vpc: Still creating... [10s elapsed]
+module.networking.aws_s3_bucket.alb_logs: Still creating... [10s elapsed]
+module.networking.aws_s3_bucket.alb_logs: Creation complete after 11s [id=eo-alb-logs]
+module.networking.aws_s3_bucket_acl.alb_logs_acl: Creating...
+module.networking.aws_s3_bucket_acl.alb_logs_acl: Creation complete after 0s [id=eo-alb-logs,log-delivery-write]
+module.networking.aws_vpc.vpc: Creation complete after 14s [id=vpc-0f3787dd67895afdb]
+module.networking.aws_internet_gateway.ig: Creating...
+module.networking.aws_route_table.public: Creating...
+module.networking.aws_route_table.private: Creating...
+module.networking.aws_subnet.private_subnet[1]: Creating...
+module.networking.aws_alb_target_group.alb_target_group_https: Creating...
+module.networking.aws_subnet.public_subnet[2]: Creating...
+module.networking.aws_security_group.alb: Creating...
+module.networking.aws_security_group.bastion: Creating...
+module.networking.aws_subnet.public_subnet[0]: Creating...
+module.networking.aws_security_group.default: Creating...
+module.networking.aws_route_table.public: Creation complete after 1s [id=rtb-0e26e5e098572ea8d]
+module.networking.aws_subnet.public_subnet[1]: Creating...
+module.networking.aws_route_table.private: Creation complete after 1s [id=rtb-01274ca2cf9677ebd]
+module.networking.aws_security_group.pgdb: Creating...
+module.networking.aws_internet_gateway.ig: Creation complete after 2s [id=igw-08643e09ff28873fa]
+module.networking.aws_security_group.webapp: Creating...
+module.networking.aws_subnet.private_subnet[1]: Creation complete after 2s [id=subnet-0eb678cb04221a437]
+module.networking.aws_subnet.private_subnet[0]: Creating...
+module.networking.aws_alb_target_group.alb_target_group_https: Creation complete after 2s [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb]
+module.networking.aws_subnet.private_subnet[2]: Creating...
+module.networking.aws_subnet.private_subnet[0]: Creation complete after 1s [id=subnet-0d146eaed22f3b43f]
+module.networking.aws_eip.nat_eip: Creating...
+module.networking.aws_subnet.private_subnet[2]: Creation complete after 1s [id=subnet-05b4f4872fceaf060]
+module.networking.aws_route.public_internet_gateway: Creating...
+module.networking.aws_eip.nat_eip: Creation complete after 0s [id=eipalloc-06ee499e58d7a7967]
+module.networking.aws_route_table_association.private[2]: Creating...
+module.networking.aws_security_group.alb: Creation complete after 4s [id=sg-0400ddd9fd688c8e0]
+module.networking.aws_security_group.bastion: Creation complete after 4s [id=sg-0c031f8a1e16ca694]
+module.networking.aws_route_table_association.private[0]: Creating...
+module.networking.aws_route_table_association.private[1]: Creating...
+module.networking.aws_security_group.pgdb: Creation complete after 3s [id=sg-0600eee3e50914167]
+module.networking.aws_security_group_rule.https-alb-world: Creating...
+module.networking.aws_route_table_association.private[2]: Creation complete after 1s [id=rtbassoc-0e20fae30aaf3c94b]
+module.networking.aws_security_group_rule.http-alb-world: Creating...
+module.networking.aws_security_group.default: Creation complete after 4s [id=sg-06b84ae852e208856]
+module.networking.aws_security_group_rule.ssh-bastion-world: Creating...
+module.networking.aws_route.public_internet_gateway: Creation complete after 1s [id=r-rtb-0e26e5e098572ea8d1080289494]
+module.networking.aws_security_group_rule.ssh-bastion-alb: Creating...
+module.networking.aws_route_table_association.private[0]: Creation complete after 0s [id=rtbassoc-02e5c293d24978fcd]
+module.networking.aws_security_group.webapp: Creation complete after 2s [id=sg-0a8fa2152dfd11fa7]
+module.networking.aws_security_group_rule.https-alb-bastion: Creating...
+module.networking.aws_security_group_rule.ssh-bastion-webapp: Creating...
+module.networking.aws_route_table_association.private[1]: Creation complete after 0s [id=rtbassoc-0e09b763338d3b68c]
+module.networking.aws_instance.pgdb: Creating...
+module.networking.aws_security_group_rule.https-alb-world: Creation complete after 1s [id=sgrule-2082732610]
+module.networking.aws_security_group_rule.ssh-pgdb-bastion: Creating...
+module.networking.aws_security_group_rule.ssh-bastion-world: Creation complete after 1s [id=sgrule-1453262871]
+module.networking.aws_security_group_rule.pgsql-webapp-pgdb: Creating...
+module.networking.aws_security_group_rule.ssh-pgdb-bastion: Creation complete after 1s [id=sgrule-3784172598]
+module.networking.aws_security_group_rule.http-alb-world: Creation complete after 2s [id=sgrule-2431565471]
+module.networking.aws_security_group_rule.ssh-webapp-bastion: Creating...
+module.networking.aws_security_group_rule.https-webapp-bastion: Creating...
+module.networking.aws_security_group_rule.ssh-bastion-alb: Creation complete after 2s [id=sgrule-3931295230]
+module.networking.aws_instance.webapp: Creating...
+module.networking.aws_security_group_rule.pgsql-pgdb-webapp: Creating...
+module.networking.aws_security_group_rule.https-alb-bastion: Creation complete after 3s [id=sgrule-3630026005]
+module.networking.aws_security_group_rule.https-webapp-bastion: Creation complete after 1s [id=sgrule-559871358]
+module.networking.aws_security_group_rule.ssh-bastion-webapp: Creation complete after 3s [id=sgrule-3231802123]
+module.networking.aws_security_group_rule.pgsql-pgdb-webapp: Creation complete after 1s [id=sgrule-2115300850]
+module.networking.aws_security_group_rule.ssh-webapp-bastion: Creation complete after 2s [id=sgrule-1426692752]
+module.networking.aws_subnet.public_subnet[0]: Still creating... [10s elapsed]
+module.networking.aws_subnet.public_subnet[2]: Still creating... [10s elapsed]
+module.networking.aws_subnet.public_subnet[1]: Still creating... [10s elapsed]
+module.networking.aws_subnet.public_subnet[2]: Creation complete after 12s [id=subnet-01f32e8faa80ec3bf]
+module.networking.aws_subnet.public_subnet[0]: Creation complete after 12s [id=subnet-004be8dfd50a550dc]
+module.networking.aws_instance.bastion: Creating...
+module.networking.aws_subnet.public_subnet[1]: Creation complete after 12s [id=subnet-0251cc1babab10f15]
+module.networking.aws_route_table_association.public[1]: Creating...
+module.networking.aws_route_table_association.public[2]: Creating...
+module.networking.aws_route_table_association.public[0]: Creating...
+module.networking.aws_nat_gateway.nat: Creating...
+module.networking.aws_alb.alb: Creating...
+module.networking.aws_route_table_association.public[1]: Creation complete after 0s [id=rtbassoc-0c888c9831230b57e]
+module.networking.aws_route_table_association.public[2]: Creation complete after 0s [id=rtbassoc-050aef1eff1aa3d6a]
+module.networking.aws_route_table_association.public[0]: Creation complete after 0s [id=rtbassoc-07111fbdc389d9f50]
+module.networking.aws_instance.pgdb: Still creating... [10s elapsed]
+module.networking.aws_instance.webapp: Still creating... [10s elapsed]
+module.networking.aws_instance.pgdb: Creation complete after 14s [id=i-08c725469d43f1298]
+module.networking.aws_instance.webapp: Creation complete after 14s [id=i-0393c20e4be2ea084]
+module.networking.aws_instance.bastion: Still creating... [10s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [10s elapsed]
+module.networking.aws_alb.alb: Still creating... [10s elapsed]
+module.networking.aws_instance.bastion: Creation complete after 14s [id=i-0a58555a4a07edb2a]
+module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion: Creating...
+module.networking.aws_eip.bastion: Creating...
+module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion: Creation complete after 0s [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb-20220404085450449800000001]
+module.networking.aws_eip.bastion: Creation complete after 2s [id=eipalloc-0fa8966d20662fea8]
+module.networking.aws_nat_gateway.nat: Still creating... [20s elapsed]
+module.networking.aws_alb.alb: Still creating... [20s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [30s elapsed]
+module.networking.aws_alb.alb: Still creating... [30s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [40s elapsed]
+module.networking.aws_alb.alb: Still creating... [40s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [50s elapsed]
+module.networking.aws_alb.alb: Still creating... [50s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [1m0s elapsed]
+module.networking.aws_alb.alb: Still creating... [1m0s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [1m10s elapsed]
+module.networking.aws_alb.alb: Still creating... [1m10s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [1m20s elapsed]
+module.networking.aws_alb.alb: Still creating... [1m20s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [1m30s elapsed]
+module.networking.aws_alb.alb: Still creating... [1m30s elapsed]
+module.networking.aws_nat_gateway.nat: Still creating... [1m40s elapsed]
+module.networking.aws_alb.alb: Still creating... [1m40s elapsed]
+module.networking.aws_nat_gateway.nat: Creation complete after 1m47s [id=nat-0fc8ca7fd33c3f46e]
+module.networking.aws_route.private_nat_gateway: Creating...
+module.networking.aws_route.private_nat_gateway: Creation complete after 1s [id=r-rtb-01274ca2cf9677ebd1080289494]
+module.networking.aws_alb.alb: Still creating... [1m50s elapsed]
+module.networking.aws_alb.alb: Still creating... [2m0s elapsed]
+module.networking.aws_alb.alb: Still creating... [2m10s elapsed]
+module.networking.aws_alb.alb: Still creating... [2m20s elapsed]
+module.networking.aws_alb.alb: Still creating... [2m30s elapsed]
+module.networking.aws_alb.alb: Still creating... [2m40s elapsed]
+module.networking.aws_alb.alb: Still creating... [2m50s elapsed]
+module.networking.aws_alb.alb: Still creating... [3m0s elapsed]
+module.networking.aws_alb.alb: Still creating... [3m10s elapsed]
+module.networking.aws_alb.alb: Creation complete after 3m15s [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:loadbalancer/app/eo-alb/0f69ce5119131d7f]
+module.networking.aws_alb_listener.alb_listener_https: Creating...
+module.networking.aws_alb_listener.alb_listener_http: Creating...
+module.networking.aws_alb_listener.alb_listener_https: Creation complete after 1s [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/fd7b6ccd749eb7bb]
+module.networking.aws_alb_listener.alb_listener_http: Creation complete after 1s [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/967a185e932e5e1f]
+╷
+│ Error: One of ['cidr_blocks', 'ipv6_cidr_blocks', 'self', 'source_security_group_id', 'prefix_list_ids'] must be set to create an AWS Security Group Rule
+│ 
+│   with module.networking.aws_security_group_rule.pgsql-webapp-pgdb,
+│   on modules/networking/main.tf line 286, in resource "aws_security_group_rule" "pgsql-webapp-pgdb":
+│  286: resource "aws_security_group_rule" "pgsql-webapp-pgdb" {
+│ 
+╵
+✘-1 ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+14:57 $ terraform apply
+module.networking.aws_key_pair.main: Refreshing state... [id=eo-tanvir-key]
+module.networking.aws_vpc.vpc: Refreshing state... [id=vpc-0f3787dd67895afdb]
+module.networking.aws_s3_bucket.alb_logs: Refreshing state... [id=eo-alb-logs]
+module.networking.aws_internet_gateway.ig: Refreshing state... [id=igw-08643e09ff28873fa]
+module.networking.aws_subnet.public_subnet[2]: Refreshing state... [id=subnet-01f32e8faa80ec3bf]
+module.networking.aws_subnet.public_subnet[0]: Refreshing state... [id=subnet-004be8dfd50a550dc]
+module.networking.aws_security_group.pgdb: Refreshing state... [id=sg-0600eee3e50914167]
+module.networking.aws_security_group.bastion: Refreshing state... [id=sg-0c031f8a1e16ca694]
+module.networking.aws_security_group.webapp: Refreshing state... [id=sg-0a8fa2152dfd11fa7]
+module.networking.aws_route_table.public: Refreshing state... [id=rtb-0e26e5e098572ea8d]
+module.networking.aws_subnet.public_subnet[1]: Refreshing state... [id=subnet-0251cc1babab10f15]
+module.networking.aws_subnet.private_subnet[2]: Refreshing state... [id=subnet-05b4f4872fceaf060]
+module.networking.aws_subnet.private_subnet[0]: Refreshing state... [id=subnet-0d146eaed22f3b43f]
+module.networking.aws_subnet.private_subnet[1]: Refreshing state... [id=subnet-0eb678cb04221a437]
+module.networking.aws_security_group.default: Refreshing state... [id=sg-06b84ae852e208856]
+module.networking.aws_route_table.private: Refreshing state... [id=rtb-01274ca2cf9677ebd]
+module.networking.aws_security_group.alb: Refreshing state... [id=sg-0400ddd9fd688c8e0]
+module.networking.aws_alb_target_group.alb_target_group_https: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb]
+module.networking.aws_eip.nat_eip: Refreshing state... [id=eipalloc-06ee499e58d7a7967]
+module.networking.aws_security_group_rule.pgsql-pgdb-webapp: Refreshing state... [id=sgrule-2115300850]
+module.networking.aws_security_group_rule.ssh-webapp-bastion: Refreshing state... [id=sgrule-1426692752]
+module.networking.aws_security_group_rule.ssh-pgdb-bastion: Refreshing state... [id=sgrule-3784172598]
+module.networking.aws_security_group_rule.https-webapp-bastion: Refreshing state... [id=sgrule-559871358]
+module.networking.aws_security_group_rule.ssh-bastion-webapp: Refreshing state... [id=sgrule-3231802123]
+module.networking.aws_security_group_rule.ssh-bastion-world: Refreshing state... [id=sgrule-1453262871]
+module.networking.aws_instance.bastion: Refreshing state... [id=i-0a58555a4a07edb2a]
+module.networking.aws_route.public_internet_gateway: Refreshing state... [id=r-rtb-0e26e5e098572ea8d1080289494]
+module.networking.aws_route_table_association.public[2]: Refreshing state... [id=rtbassoc-050aef1eff1aa3d6a]
+module.networking.aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0c888c9831230b57e]
+module.networking.aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-07111fbdc389d9f50]
+module.networking.aws_instance.pgdb: Refreshing state... [id=i-08c725469d43f1298]
+module.networking.aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-02e5c293d24978fcd]
+module.networking.aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-0e09b763338d3b68c]
+module.networking.aws_route_table_association.private[2]: Refreshing state... [id=rtbassoc-0e20fae30aaf3c94b]
+module.networking.aws_instance.webapp: Refreshing state... [id=i-0393c20e4be2ea084]
+module.networking.aws_security_group_rule.https-alb-world: Refreshing state... [id=sgrule-2082732610]
+module.networking.aws_security_group_rule.https-alb-bastion: Refreshing state... [id=sgrule-3630026005]
+module.networking.aws_alb.alb: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:loadbalancer/app/eo-alb/0f69ce5119131d7f]
+module.networking.aws_security_group_rule.http-alb-world: Refreshing state... [id=sgrule-2431565471]
+module.networking.aws_security_group_rule.ssh-bastion-alb: Refreshing state... [id=sgrule-3931295230]
+module.networking.aws_nat_gateway.nat: Refreshing state... [id=nat-0fc8ca7fd33c3f46e]
+module.networking.aws_s3_bucket_acl.alb_logs_acl: Refreshing state... [id=eo-alb-logs,log-delivery-write]
+module.networking.aws_route.private_nat_gateway: Refreshing state... [id=r-rtb-01274ca2cf9677ebd1080289494]
+module.networking.aws_alb_listener.alb_listener_http: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/967a185e932e5e1f]
+module.networking.aws_alb_listener.alb_listener_https: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/fd7b6ccd749eb7bb]
+module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb-20220404085450449800000001]
+module.networking.aws_eip.bastion: Refreshing state... [id=eipalloc-0fa8966d20662fea8]
+
+Note: Objects have changed outside of Terraform
+
+Terraform detected the following changes made outside of Terraform since the last "terraform apply":
+
+  # module.networking.aws_alb_listener.alb_listener_http has changed
+  ~ resource "aws_alb_listener" "alb_listener_http" {
+        id                = "arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/967a185e932e5e1f"
+      + tags              = {}
+        # (5 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.networking.aws_alb_listener.alb_listener_https has changed
+  ~ resource "aws_alb_listener" "alb_listener_https" {
+        id                = "arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/fd7b6ccd749eb7bb"
+      + tags              = {}
+        # (7 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # module.networking.aws_alb_target_group.alb_target_group_https has changed
+  ~ resource "aws_alb_target_group" "alb_target_group_https" {
+        id                                 = "arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb"
+        name                               = "alb-tg-https"
+      + tags                               = {}
+        # (14 unchanged attributes hidden)
+
+
+        # (2 unchanged blocks hidden)
+    }
+
+  # module.networking.aws_eip.bastion has changed
+  ~ resource "aws_eip" "bastion" {
+        id                   = "eipalloc-0fa8966d20662fea8"
+      + tags                 = {}
+        # (13 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_eip.nat_eip has changed
+  ~ resource "aws_eip" "nat_eip" {
+      + association_id       = "eipassoc-01268422695fee164"
+        id                   = "eipalloc-06ee499e58d7a7967"
+      + network_interface    = "eni-01dc2f4afc9826b8b"
+      + private_dns          = "ip-10-0-43-26.eu-west-2.compute.internal"
+      + private_ip           = "10.0.43.26"
+      + tags                 = {}
+        # (8 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_instance.bastion has changed
+  ~ resource "aws_instance" "bastion" {
+        id                                   = "i-0a58555a4a07edb2a"
+      ~ public_dns                           = "ec2-35-178-73-41.eu-west-2.compute.amazonaws.com" -> "ec2-35-178-98-168.eu-west-2.compute.amazonaws.com"
+      ~ public_ip                            = "35.178.73.41" -> "35.178.98.168"
+        tags                                 = {
+            "Name" = "eo-bastion"
+        }
+        # (28 unchanged attributes hidden)
+
+
+
+
+
+        # (5 unchanged blocks hidden)
+    }
+
+  # module.networking.aws_key_pair.main has changed
+  ~ resource "aws_key_pair" "main" {
+        id          = "eo-tanvir-key"
+      + tags        = {}
+        # (6 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_route_table.private has changed
+  ~ resource "aws_route_table" "private" {
+        id               = "rtb-01274ca2cf9677ebd"
+      ~ route            = [
+          + {
+              + carrier_gateway_id         = ""
+              + cidr_block                 = "0.0.0.0/0"
+              + destination_prefix_list_id = ""
+              + egress_only_gateway_id     = ""
+              + gateway_id                 = ""
+              + instance_id                = ""
+              + ipv6_cidr_block            = ""
+              + local_gateway_id           = ""
+              + nat_gateway_id             = "nat-0fc8ca7fd33c3f46e"
+              + network_interface_id       = ""
+              + transit_gateway_id         = ""
+              + vpc_endpoint_id            = ""
+              + vpc_peering_connection_id  = ""
+            },
+        ]
+        tags             = {
+            "Environment" = "production"
+            "Name"        = "eo-private-route-table"
+        }
+        # (5 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_route_table.public has changed
+  ~ resource "aws_route_table" "public" {
+        id               = "rtb-0e26e5e098572ea8d"
+      ~ route            = [
+          + {
+              + carrier_gateway_id         = ""
+              + cidr_block                 = "0.0.0.0/0"
+              + destination_prefix_list_id = ""
+              + egress_only_gateway_id     = ""
+              + gateway_id                 = "igw-08643e09ff28873fa"
+              + instance_id                = ""
+              + ipv6_cidr_block            = ""
+              + local_gateway_id           = ""
+              + nat_gateway_id             = ""
+              + network_interface_id       = ""
+              + transit_gateway_id         = ""
+              + vpc_endpoint_id            = ""
+              + vpc_peering_connection_id  = ""
+            },
+        ]
+        tags             = {
+            "Environment" = "production"
+            "Name"        = "eo-public-route-table"
+        }
+        # (5 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_s3_bucket.alb_logs has changed
+  ~ resource "aws_s3_bucket" "alb_logs" {
+      ~ grant                                = [
+          + {
+              + id          = ""
+              + permissions = [
+                  + "READ_ACP",
+                  + "WRITE",
+                ]
+              + type        = "Group"
+              + uri         = "http://acs.amazonaws.com/groups/s3/LogDelivery"
+            },
+          + {
+              + id          = "d3f3f7208db4e10816547e5166daafd5bc9b00941effa0bb3babf5f99559aae9"
+              + permissions = [
+                  + "FULL_CONTROL",
+                ]
+              + type        = "CanonicalUser"
+              + uri         = ""
+            },
+        ]
+        id                                   = "eo-alb-logs"
+        tags                                 = {
+            "Environment" = "production"
+            "Name"        = "eo-alb-logs"
+        }
+        # (18 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group.alb has changed
+  ~ resource "aws_security_group" "alb" {
+      ~ egress                 = [
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 443
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = [
+                  + "sg-0c031f8a1e16ca694",
+                ]
+              + self             = false
+              + to_port          = 443
+            },
+        ]
+        id                     = "sg-0400ddd9fd688c8e0"
+      ~ ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 443
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 443
+            },
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+            },
+        ]
+        name                   = "eo-alb-sg"
+        tags                   = {
+            "Name" = "eo-alb"
+        }
+        # (6 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group.bastion has changed
+  ~ resource "aws_security_group" "bastion" {
+      ~ egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "10.0.0.0/16",
+                ]
+              + description      = ""
+              + from_port        = 22
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 22
+            },
+        ]
+        id                     = "sg-0c031f8a1e16ca694"
+      ~ ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + description      = ""
+              + from_port        = 22
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 22
+            },
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 443
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = [
+                  + "sg-0400ddd9fd688c8e0",
+                ]
+              + self             = false
+              + to_port          = 443
+            },
+        ]
+        name                   = "eo-bastion-sg"
+        tags                   = {
+            "Name" = "eo-bastion"
+        }
+        # (6 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group.pgdb has changed
+  ~ resource "aws_security_group" "pgdb" {
+        id                     = "sg-0600eee3e50914167"
+      ~ ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 22
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = [
+                  + "sg-0c031f8a1e16ca694",
+                ]
+              + self             = false
+              + to_port          = 22
+            },
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 5432
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = [
+                  + "sg-0a8fa2152dfd11fa7",
+                ]
+              + self             = false
+              + to_port          = 5432
+            },
+        ]
+        name                   = "eo-pgdb-sg"
+        tags                   = {
+            "Name" = "eo-pgdb"
+        }
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group.webapp has changed
+  ~ resource "aws_security_group" "webapp" {
+        id                     = "sg-0a8fa2152dfd11fa7"
+      ~ ingress                = [
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 22
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = [
+                  + "sg-0c031f8a1e16ca694",
+                ]
+              + self             = false
+              + to_port          = 22
+            },
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 443
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = [
+                  + "sg-0c031f8a1e16ca694",
+                ]
+              + self             = false
+              + to_port          = 443
+            },
+        ]
+        name                   = "eo-webapp-sg"
+        tags                   = {
+            "Name" = "eo-webapp"
+        }
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.http-alb-world has changed
+  ~ resource "aws_security_group_rule" "http-alb-world" {
+        id                = "sgrule-2431565471"
+      + ipv6_cidr_blocks  = []
+      + prefix_list_ids   = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.https-alb-bastion has changed
+  ~ resource "aws_security_group_rule" "https-alb-bastion" {
+      + cidr_blocks              = []
+        id                       = "sgrule-3630026005"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.https-alb-world has changed
+  ~ resource "aws_security_group_rule" "https-alb-world" {
+        id                = "sgrule-2082732610"
+      + ipv6_cidr_blocks  = []
+      + prefix_list_ids   = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.https-webapp-bastion has changed
+  ~ resource "aws_security_group_rule" "https-webapp-bastion" {
+      + cidr_blocks              = []
+        id                       = "sgrule-559871358"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.pgsql-pgdb-webapp has changed
+  ~ resource "aws_security_group_rule" "pgsql-pgdb-webapp" {
+      + cidr_blocks              = []
+        id                       = "sgrule-2115300850"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.ssh-bastion-alb has changed
+  ~ resource "aws_security_group_rule" "ssh-bastion-alb" {
+      + cidr_blocks              = []
+        id                       = "sgrule-3931295230"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.ssh-bastion-webapp has changed
+  ~ resource "aws_security_group_rule" "ssh-bastion-webapp" {
+        id                = "sgrule-3231802123"
+      + ipv6_cidr_blocks  = []
+      + prefix_list_ids   = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.ssh-bastion-world has changed
+  ~ resource "aws_security_group_rule" "ssh-bastion-world" {
+        id                = "sgrule-1453262871"
+      + ipv6_cidr_blocks  = []
+      + prefix_list_ids   = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.ssh-pgdb-bastion has changed
+  ~ resource "aws_security_group_rule" "ssh-pgdb-bastion" {
+      + cidr_blocks              = []
+        id                       = "sgrule-3784172598"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.ssh-webapp-bastion has changed
+  ~ resource "aws_security_group_rule" "ssh-webapp-bastion" {
+      + cidr_blocks              = []
+        id                       = "sgrule-1426692752"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+        # (7 unchanged attributes hidden)
+    }
+
+
+Unless you have made equivalent changes to your configuration, or ignored the relevant attributes using ignore_changes, the following plan may include actions to undo or respond to these changes.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.networking.aws_security_group_rule.pgsql-webapp-pgdb will be created
+  + resource "aws_security_group_rule" "pgsql-webapp-pgdb" {
+      + from_port                = 5432
+      + id                       = (known after apply)
+      + protocol                 = "tcp"
+      + security_group_id        = "sg-0600eee3e50914167"
+      + self                     = true
+      + source_security_group_id = (known after apply)
+      + to_port                  = 5432
+      + type                     = "egress"
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+module.networking.aws_security_group_rule.pgsql-webapp-pgdb: Creating...
+module.networking.aws_security_group_rule.pgsql-webapp-pgdb: Creation complete after 1s [id=sgrule-986227306]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+✔ ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+15:32 $ terraform apply
+module.networking.aws_key_pair.main: Refreshing state... [id=eo-tanvir-key]
+module.networking.aws_vpc.vpc: Refreshing state... [id=vpc-0f3787dd67895afdb]
+module.networking.aws_s3_bucket.alb_logs: Refreshing state... [id=eo-alb-logs]
+module.networking.aws_route_table.private: Refreshing state... [id=rtb-01274ca2cf9677ebd]
+module.networking.aws_security_group.pgdb: Refreshing state... [id=sg-0600eee3e50914167]
+module.networking.aws_internet_gateway.ig: Refreshing state... [id=igw-08643e09ff28873fa]
+module.networking.aws_subnet.private_subnet[2]: Refreshing state... [id=subnet-05b4f4872fceaf060]
+module.networking.aws_route_table.public: Refreshing state... [id=rtb-0e26e5e098572ea8d]
+module.networking.aws_security_group.alb: Refreshing state... [id=sg-0400ddd9fd688c8e0]
+module.networking.aws_subnet.private_subnet[1]: Refreshing state... [id=subnet-0eb678cb04221a437]
+module.networking.aws_subnet.private_subnet[0]: Refreshing state... [id=subnet-0d146eaed22f3b43f]
+module.networking.aws_subnet.public_subnet[0]: Refreshing state... [id=subnet-004be8dfd50a550dc]
+module.networking.aws_subnet.public_subnet[1]: Refreshing state... [id=subnet-0251cc1babab10f15]
+module.networking.aws_subnet.public_subnet[2]: Refreshing state... [id=subnet-01f32e8faa80ec3bf]
+module.networking.aws_alb_target_group.alb_target_group_https: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb]
+module.networking.aws_security_group.bastion: Refreshing state... [id=sg-0c031f8a1e16ca694]
+module.networking.aws_security_group.default: Refreshing state... [id=sg-06b84ae852e208856]
+module.networking.aws_security_group.webapp: Refreshing state... [id=sg-0a8fa2152dfd11fa7]
+module.networking.aws_eip.nat_eip: Refreshing state... [id=eipalloc-06ee499e58d7a7967]
+module.networking.aws_route.public_internet_gateway: Refreshing state... [id=r-rtb-0e26e5e098572ea8d1080289494]
+module.networking.aws_security_group_rule.pgsql-webapp-pgdb: Refreshing state... [id=sgrule-986227306]
+module.networking.aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-02e5c293d24978fcd]
+module.networking.aws_instance.pgdb: Refreshing state... [id=i-08c725469d43f1298]
+module.networking.aws_route_table_association.private[2]: Refreshing state... [id=rtbassoc-0e20fae30aaf3c94b]
+module.networking.aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-0e09b763338d3b68c]
+module.networking.aws_security_group_rule.http-alb-world: Refreshing state... [id=sgrule-2431565471]
+module.networking.aws_security_group_rule.https-alb-world: Refreshing state... [id=sgrule-2082732610]
+module.networking.aws_route_table_association.public[2]: Refreshing state... [id=rtbassoc-050aef1eff1aa3d6a]
+module.networking.aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-07111fbdc389d9f50]
+module.networking.aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0c888c9831230b57e]
+module.networking.aws_alb.alb: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:loadbalancer/app/eo-alb/0f69ce5119131d7f]
+module.networking.aws_security_group_rule.ssh-bastion-alb: Refreshing state... [id=sgrule-3931295230]
+module.networking.aws_instance.bastion: Refreshing state... [id=i-0a58555a4a07edb2a]
+module.networking.aws_security_group_rule.ssh-pgdb-bastion: Refreshing state... [id=sgrule-3784172598]
+module.networking.aws_security_group_rule.https-alb-bastion: Refreshing state... [id=sgrule-3630026005]
+module.networking.aws_security_group_rule.ssh-bastion-webapp: Refreshing state... [id=sgrule-3231802123]
+module.networking.aws_security_group_rule.ssh-bastion-world: Refreshing state... [id=sgrule-1453262871]
+module.networking.aws_instance.webapp: Refreshing state... [id=i-0393c20e4be2ea084]
+module.networking.aws_security_group_rule.https-webapp-bastion: Refreshing state... [id=sgrule-559871358]
+module.networking.aws_security_group_rule.ssh-webapp-bastion: Refreshing state... [id=sgrule-1426692752]
+module.networking.aws_security_group_rule.pgsql-pgdb-webapp: Refreshing state... [id=sgrule-2115300850]
+module.networking.aws_nat_gateway.nat: Refreshing state... [id=nat-0fc8ca7fd33c3f46e]
+module.networking.aws_s3_bucket_acl.alb_logs_acl: Refreshing state... [id=eo-alb-logs,log-delivery-write]
+module.networking.aws_route.private_nat_gateway: Refreshing state... [id=r-rtb-01274ca2cf9677ebd1080289494]
+module.networking.aws_alb_listener.alb_listener_https: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/fd7b6ccd749eb7bb]
+module.networking.aws_alb_listener.alb_listener_http: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/967a185e932e5e1f]
+module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb-20220404085450449800000001]
+module.networking.aws_eip.bastion: Refreshing state... [id=eipalloc-0fa8966d20662fea8]
+
+Note: Objects have changed outside of Terraform
+
+Terraform detected the following changes made outside of Terraform since the last "terraform apply":
+
+  # module.networking.aws_security_group.pgdb has changed
+  ~ resource "aws_security_group" "pgdb" {
+      ~ egress                 = [
+          + {
+              + cidr_blocks      = []
+              + description      = ""
+              + from_port        = 5432
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = true
+              + to_port          = 5432
+            },
+        ]
+        id                     = "sg-0600eee3e50914167"
+        name                   = "eo-pgdb-sg"
+        tags                   = {
+            "Name" = "eo-pgdb"
+        }
+        # (7 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_security_group_rule.pgsql-webapp-pgdb has changed
+  ~ resource "aws_security_group_rule" "pgsql-webapp-pgdb" {
+      + cidr_blocks              = []
+        id                       = "sgrule-986227306"
+      + ipv6_cidr_blocks         = []
+      + prefix_list_ids          = []
+      + source_security_group_id = "sg-0600eee3e50914167"
+        # (6 unchanged attributes hidden)
+    }
+
+
+Unless you have made equivalent changes to your configuration, or ignored the relevant attributes using ignore_changes, the following plan may include actions to undo or respond to these changes.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # module.networking.aws_vpc_dhcp_options.dns_resolver will be created
+  + resource "aws_vpc_dhcp_options" "dns_resolver" {
+      + arn         = (known after apply)
+      + domain_name = "metafour.cloud"
+      + id          = (known after apply)
+      + owner_id    = (known after apply)
+      + tags_all    = (known after apply)
+    }
+
+  # module.networking.aws_vpc_dhcp_options_association.dns_resolver will be created
+  + resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+      + dhcp_options_id = (known after apply)
+      + id              = (known after apply)
+      + vpc_id          = "vpc-0f3787dd67895afdb"
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+module.networking.aws_vpc_dhcp_options.dns_resolver: Creating...
+module.networking.aws_vpc_dhcp_options.dns_resolver: Creation complete after 1s [id=dopt-0c2afcc3d01e19b91]
+module.networking.aws_vpc_dhcp_options_association.dns_resolver: Creating...
+module.networking.aws_vpc_dhcp_options_association.dns_resolver: Creation complete after 1s [id=dopt-0c2afcc3d01e19b91-vpc-0f3787dd67895afdb]
+
+Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
+✔ ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+15:41 $ terraform apply
+╷
+│ Error: Incorrect attribute value type
+│ 
+│   on modules/networking/main.tf line 15, in resource "aws_vpc_dhcp_options" "dns_resolver":
+│   15:   domain_name_servers = "AmazonProvidedDNS"
+│ 
+│ Inappropriate value for attribute "domain_name_servers": list of string required.
+╵
+✘-1 ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+15:43 $ terraform apply
+╷
+│ Error: Invalid reference
+│ 
+│   on modules/networking/main.tf line 15, in resource "aws_vpc_dhcp_options" "dns_resolver":
+│   15:   domain_name_servers = AmazonProvidedDNS
+│ 
+│ A reference to a resource type must be followed by at least one attribute access, specifying the resource name.
+╵
+✘-1 ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+15:43 $ terraform apply
+module.networking.aws_vpc_dhcp_options.dns_resolver: Refreshing state... [id=dopt-0c2afcc3d01e19b91]
+module.networking.aws_vpc.vpc: Refreshing state... [id=vpc-0f3787dd67895afdb]
+module.networking.aws_key_pair.main: Refreshing state... [id=eo-tanvir-key]
+module.networking.aws_s3_bucket.alb_logs: Refreshing state... [id=eo-alb-logs]
+module.networking.aws_security_group.default: Refreshing state... [id=sg-06b84ae852e208856]
+module.networking.aws_alb_target_group.alb_target_group_https: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb]
+module.networking.aws_security_group.bastion: Refreshing state... [id=sg-0c031f8a1e16ca694]
+module.networking.aws_security_group.alb: Refreshing state... [id=sg-0400ddd9fd688c8e0]
+module.networking.aws_internet_gateway.ig: Refreshing state... [id=igw-08643e09ff28873fa]
+module.networking.aws_subnet.private_subnet[2]: Refreshing state... [id=subnet-05b4f4872fceaf060]
+module.networking.aws_subnet.private_subnet[0]: Refreshing state... [id=subnet-0d146eaed22f3b43f]
+module.networking.aws_subnet.private_subnet[1]: Refreshing state... [id=subnet-0eb678cb04221a437]
+module.networking.aws_security_group.webapp: Refreshing state... [id=sg-0a8fa2152dfd11fa7]
+module.networking.aws_vpc_dhcp_options_association.dns_resolver: Refreshing state... [id=dopt-0c2afcc3d01e19b91-vpc-0f3787dd67895afdb]
+module.networking.aws_route_table.private: Refreshing state... [id=rtb-01274ca2cf9677ebd]
+module.networking.aws_security_group.pgdb: Refreshing state... [id=sg-0600eee3e50914167]
+module.networking.aws_route_table.public: Refreshing state... [id=rtb-0e26e5e098572ea8d]
+module.networking.aws_subnet.public_subnet[0]: Refreshing state... [id=subnet-004be8dfd50a550dc]
+module.networking.aws_subnet.public_subnet[1]: Refreshing state... [id=subnet-0251cc1babab10f15]
+module.networking.aws_subnet.public_subnet[2]: Refreshing state... [id=subnet-01f32e8faa80ec3bf]
+module.networking.aws_security_group_rule.http-alb-world: Refreshing state... [id=sgrule-2431565471]
+module.networking.aws_security_group_rule.https-alb-world: Refreshing state... [id=sgrule-2082732610]
+module.networking.aws_security_group_rule.https-alb-bastion: Refreshing state... [id=sgrule-3630026005]
+module.networking.aws_security_group_rule.ssh-bastion-alb: Refreshing state... [id=sgrule-3931295230]
+module.networking.aws_security_group_rule.ssh-bastion-world: Refreshing state... [id=sgrule-1453262871]
+module.networking.aws_security_group_rule.ssh-bastion-webapp: Refreshing state... [id=sgrule-3231802123]
+module.networking.aws_eip.nat_eip: Refreshing state... [id=eipalloc-06ee499e58d7a7967]
+module.networking.aws_security_group_rule.ssh-webapp-bastion: Refreshing state... [id=sgrule-1426692752]
+module.networking.aws_instance.webapp: Refreshing state... [id=i-0393c20e4be2ea084]
+module.networking.aws_security_group_rule.https-webapp-bastion: Refreshing state... [id=sgrule-559871358]
+module.networking.aws_route_table_association.private[0]: Refreshing state... [id=rtbassoc-02e5c293d24978fcd]
+module.networking.aws_route_table_association.private[2]: Refreshing state... [id=rtbassoc-0e20fae30aaf3c94b]
+module.networking.aws_route_table_association.private[1]: Refreshing state... [id=rtbassoc-0e09b763338d3b68c]
+module.networking.aws_route.public_internet_gateway: Refreshing state... [id=r-rtb-0e26e5e098572ea8d1080289494]
+module.networking.aws_instance.bastion: Refreshing state... [id=i-0a58555a4a07edb2a]
+module.networking.aws_route_table_association.public[0]: Refreshing state... [id=rtbassoc-07111fbdc389d9f50]
+module.networking.aws_route_table_association.public[1]: Refreshing state... [id=rtbassoc-0c888c9831230b57e]
+module.networking.aws_route_table_association.public[2]: Refreshing state... [id=rtbassoc-050aef1eff1aa3d6a]
+module.networking.aws_alb.alb: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:loadbalancer/app/eo-alb/0f69ce5119131d7f]
+module.networking.aws_nat_gateway.nat: Refreshing state... [id=nat-0fc8ca7fd33c3f46e]
+module.networking.aws_s3_bucket_acl.alb_logs_acl: Refreshing state... [id=eo-alb-logs,log-delivery-write]
+module.networking.aws_route.private_nat_gateway: Refreshing state... [id=r-rtb-01274ca2cf9677ebd1080289494]
+module.networking.aws_security_group_rule.pgsql-webapp-pgdb: Refreshing state... [id=sgrule-986227306]
+module.networking.aws_security_group_rule.pgsql-pgdb-webapp: Refreshing state... [id=sgrule-2115300850]
+module.networking.aws_security_group_rule.ssh-pgdb-bastion: Refreshing state... [id=sgrule-3784172598]
+module.networking.aws_instance.pgdb: Refreshing state... [id=i-08c725469d43f1298]
+module.networking.aws_alb_listener.alb_listener_https: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/fd7b6ccd749eb7bb]
+module.networking.aws_alb_listener.alb_listener_http: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:listener/app/eo-alb/0f69ce5119131d7f/967a185e932e5e1f]
+module.networking.aws_alb_target_group_attachment.alb-tg-https-bastion: Refreshing state... [id=arn:aws:elasticloadbalancing:eu-west-2:467952971505:targetgroup/alb-tg-https/43c100c6dd44c3cb-20220404085450449800000001]
+module.networking.aws_eip.bastion: Refreshing state... [id=eipalloc-0fa8966d20662fea8]
+
+Note: Objects have changed outside of Terraform
+
+Terraform detected the following changes made outside of Terraform since the last "terraform apply":
+
+  # module.networking.aws_vpc.vpc has changed
+  ~ resource "aws_vpc" "vpc" {
+      ~ dhcp_options_id                  = "dopt-00f5eeeca7ad6cd4c" -> "dopt-0c2afcc3d01e19b91"
+        id                               = "vpc-0f3787dd67895afdb"
+        tags                             = {
+            "Environment" = "production"
+            "Name"        = "eo-vpc"
+        }
+        # (15 unchanged attributes hidden)
+    }
+
+  # module.networking.aws_vpc_dhcp_options.dns_resolver has changed
+  ~ resource "aws_vpc_dhcp_options" "dns_resolver" {
+        id          = "dopt-0c2afcc3d01e19b91"
+      + tags        = {}
+        # (4 unchanged attributes hidden)
+    }
+
+
+Unless you have made equivalent changes to your configuration, or ignored the relevant attributes using ignore_changes, the following plan may include actions to undo or respond to these changes.
+
+────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  ~ update in-place
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # module.networking.aws_vpc_dhcp_options.dns_resolver must be replaced
+-/+ resource "aws_vpc_dhcp_options" "dns_resolver" {
+      ~ arn                 = "arn:aws:ec2:eu-west-2:467952971505:dhcp-options/dopt-0c2afcc3d01e19b91" -> (known after apply)
+      + domain_name_servers = [
+          + "AmazonProvidedDNS",
+        ] # forces replacement
+      ~ id                  = "dopt-0c2afcc3d01e19b91" -> (known after apply)
+      ~ owner_id            = "467952971505" -> (known after apply)
+      - tags                = {} -> null
+      ~ tags_all            = {} -> (known after apply)
+        # (1 unchanged attribute hidden)
+    }
+
+  # module.networking.aws_vpc_dhcp_options_association.dns_resolver will be updated in-place
+  ~ resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+      ~ dhcp_options_id = "dopt-0c2afcc3d01e19b91" -> (known after apply)
+        id              = "dopt-0c2afcc3d01e19b91-vpc-0f3787dd67895afdb"
+        # (1 unchanged attribute hidden)
+    }
+
+Plan: 1 to add, 1 to change, 1 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+module.networking.aws_vpc_dhcp_options.dns_resolver: Destroying... [id=dopt-0c2afcc3d01e19b91]
+module.networking.aws_vpc_dhcp_options.dns_resolver: Destruction complete after 1s
+module.networking.aws_vpc_dhcp_options.dns_resolver: Creating...
+module.networking.aws_vpc_dhcp_options.dns_resolver: Creation complete after 0s [id=dopt-0c8a72f1eb6261473]
+module.networking.aws_vpc_dhcp_options_association.dns_resolver: Modifying... [id=dopt-0c2afcc3d01e19b91-vpc-0f3787dd67895afdb]
+module.networking.aws_vpc_dhcp_options_association.dns_resolver: Modifications complete after 1s [id=dopt-0c8a72f1eb6261473-vpc-0f3787dd67895afdb]
+
+Apply complete! Resources: 1 added, 1 changed, 1 destroyed.
+✔ ~/Development/m4travel/terraform-aws-vpc-subnet [main|✚ 1] 
+15:44 $ 

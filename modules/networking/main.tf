@@ -10,6 +10,16 @@ resource "aws_vpc" "vpc" {
   }
 }
 
+resource "aws_vpc_dhcp_options" "dns_resolver" {
+  domain_name         = "metafour.cloud"
+  domain_name_servers = ["AmazonProvidedDNS"]
+}
+
+resource "aws_vpc_dhcp_options_association" "dns_resolver" {
+  vpc_id          = aws_vpc.vpc.id
+  dhcp_options_id = aws_vpc_dhcp_options.dns_resolver.id
+}
+
 /* Internet gateway for the public subnet */
 resource "aws_internet_gateway" "ig" {
   vpc_id = aws_vpc.vpc.id
@@ -214,25 +224,23 @@ resource "aws_security_group_rule" "ssh-bastion-world" {
   cidr_blocks = ["0.0.0.0/0"]
 }
 
-/*
+resource "aws_security_group_rule" "ssh-bastion-alb" {
+  type = "ingress"
+  from_port = 443
+  to_port = 443
+  protocol = "tcp"
+  security_group_id = aws_security_group.bastion.id
+  source_security_group_id = aws_security_group.alb.id
+}
+
 resource "aws_security_group_rule" "ssh-bastion-webapp" {
   type = "egress"
   from_port = 22
   to_port = 22
   protocol = "tcp"
   security_group_id = aws_security_group.bastion.id
-  source_security_group_id = aws_security_group.webapp.id
+  cidr_blocks = ["10.0.0.0/16"]
 }
-
-resource "aws_security_group_rule" "ssh-bastion-pgdb" {
-  type = "egress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  security_group_id = aws_security_group.bastion.id
-  source_security_group_id = aws_security_group.pgdb.id
-}
-*/
 
 // tanvir-key-pair-467952971505.rsa.pub
 resource "aws_key_pair" "main" {
@@ -249,7 +257,7 @@ resource "aws_instance" "webapp" {
   ami = data.aws_ami_ids.virtuozzo7.ids[0]
   instance_type = "m5.large"
   subnet_id = aws_subnet.private_subnet[0].id
-  vpc_security_group_ids = ["${aws_security_group.webapp.id}"]
+  vpc_security_group_ids = [aws_security_group.default.id, "${aws_security_group.webapp.id}"]
   key_name = aws_key_pair.main.key_name
 
   tags = {
@@ -290,8 +298,8 @@ resource "aws_security_group_rule" "pgsql-webapp-pgdb" {
   from_port = 5432
   to_port = 5432
   protocol = "tcp"
-  security_group_id = aws_security_group.pgdb.id
-  source_security_group_id = aws_security_group.webapp.id
+  security_group_id = aws_security_group.webapp.id
+  source_security_group_id = aws_security_group.pgdb.id
 }
 
 /*==== Database server (primary) ======*/
@@ -368,7 +376,6 @@ resource "aws_security_group_rule" "http-alb-world" {
   to_port = 80
   protocol = "tcp"
   security_group_id = aws_security_group.alb.id
-  //source_security_group_id = aws_security_group.bastion.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -378,7 +385,6 @@ resource "aws_security_group_rule" "https-alb-world" {
   to_port = 443
   protocol = "tcp"
   security_group_id = aws_security_group.alb.id
-  //source_security_group_id = aws_security_group.bastion.id
   cidr_blocks = ["0.0.0.0/0"]
 }
 
