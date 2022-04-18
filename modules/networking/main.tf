@@ -188,7 +188,7 @@ resource "aws_instance" "bastion" {
   associate_public_ip_address = true
   instance_type = "t3a.nano"
   subnet_id = aws_subnet.public_subnet[0].id
-  vpc_security_group_ids = ["${aws_security_group.bastion.id}"]
+  vpc_security_group_ids = [aws_security_group.default.id, aws_security_group.bastion.id]
   key_name = aws_key_pair.main.key_name
 
   tags = {
@@ -212,18 +212,6 @@ resource "aws_security_group" "bastion" {
   }
 }
 
-resource "aws_security_group_rule" "ssh-bastion-world" {
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  # Please restrict your ingress to only necessary IPs and ports.
-  # Opening to 0.0.0.0/0 can lead to security vulnerabilities
-  # You may want to set a fixed ip address if you have a static ip
-  security_group_id = aws_security_group.bastion.id
-  cidr_blocks = ["0.0.0.0/0"]
-}
-
 resource "aws_security_group_rule" "ssh-bastion-alb" {
   type = "ingress"
   from_port = 443
@@ -231,15 +219,6 @@ resource "aws_security_group_rule" "ssh-bastion-alb" {
   protocol = "tcp"
   security_group_id = aws_security_group.bastion.id
   source_security_group_id = aws_security_group.alb.id
-}
-
-resource "aws_security_group_rule" "ssh-bastion-webapp" {
-  type = "egress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  security_group_id = aws_security_group.bastion.id
-  cidr_blocks = ["10.0.0.0/16"]
 }
 
 // tanvir-key-pair-467952971505.rsa.pub
@@ -257,7 +236,7 @@ resource "aws_instance" "webapp" {
   ami = data.aws_ami_ids.virtuozzo7.ids[0]
   instance_type = "m5.large"
   subnet_id = aws_subnet.private_subnet[0].id
-  vpc_security_group_ids = [aws_security_group.default.id, "${aws_security_group.webapp.id}"]
+  vpc_security_group_ids = [aws_security_group.default.id, aws_security_group.webapp.id]
   key_name = aws_key_pair.main.key_name
 
   tags = {
@@ -273,15 +252,6 @@ resource "aws_security_group" "webapp" {
   tags = {
     Name = "${var.project}-webapp"
   }
-}
-
-resource "aws_security_group_rule" "ssh-webapp-bastion" {
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  security_group_id = aws_security_group.webapp.id
-  source_security_group_id = aws_security_group.bastion.id
 }
 
 resource "aws_security_group_rule" "https-webapp-bastion" {
@@ -307,7 +277,7 @@ resource "aws_instance" "pgdb" {
   ami = data.aws_ami_ids.centos7.ids[0]
   instance_type = "m5.large"
   subnet_id = aws_subnet.private_subnet[0].id
-  vpc_security_group_ids = ["${aws_security_group.pgdb.id}"]
+  vpc_security_group_ids = [aws_security_group.default.id, aws_security_group.pgdb.id]
   key_name = aws_key_pair.main.key_name
 
   tags = {
@@ -323,15 +293,6 @@ resource "aws_security_group" "pgdb" {
   tags = {
     Name = "${var.project}-pgdb"
   }
-}
-
-resource "aws_security_group_rule" "ssh-pgdb-bastion" {
-  type = "ingress"
-  from_port = 22
-  to_port = 22
-  protocol = "tcp"
-  security_group_id = aws_security_group.pgdb.id
-  source_security_group_id = aws_security_group.bastion.id
 }
 
 resource "aws_security_group_rule" "pgsql-pgdb-webapp" {
@@ -404,7 +365,7 @@ resource "aws_alb" "alb" {
   security_groups    = [aws_security_group.alb.id]
   subnets            = [for subnet in aws_subnet.public_subnet : subnet.id]
 
-  enable_deletion_protection = true
+  enable_deletion_protection = false
 
   /*access_logs {
     bucket  = aws_s3_bucket.alb_logs.bucket
